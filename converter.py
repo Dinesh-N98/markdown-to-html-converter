@@ -1,4 +1,20 @@
+import re
 import markdown
+
+def normalize_markdown(markdown_text):
+    # Ensure markdown lists are recognized when they come directly after a paragraph.
+    lines = markdown_text.splitlines()
+    normalized_lines = []
+    for index, line in enumerate(lines):
+        if re.match(r'^(?:\* |\+ |-|\d+\.\s)', line):
+            previous = lines[index - 1] if index > 0 else ''
+            if previous.strip() != '' and not re.match(r'^(?:\* |\+ |-|\d+\.\s|> |#{1,6} |---|\*\*\*|___)', previous):
+                normalized_lines.append('')
+        normalized_lines.append(line)
+
+    normalized_text = '\n'.join(normalized_lines)
+    normalized_text = re.sub(r'~~(.*?)~~', r'<del>\1</del>', normalized_text, flags=re.S)
+    return normalized_text
 
 def convert_md_to_html(input_file, output_file):
     try:
@@ -6,10 +22,12 @@ def convert_md_to_html(input_file, output_file):
         with open(input_file, 'r', encoding='utf-8') as f:
             markdown_text = f.read()
         
+        markdown_text = normalize_markdown(markdown_text)
+        
         # 2. Use the markdown library to convert the text to HTML strings
         html_content = markdown.markdown(
             markdown_text,
-            extensions=["fenced_code", "tables", "codehilite"],
+            extensions=["fenced_code", "tables", "codehilite", "sane_lists"],
             extension_configs={
                 'codehilite': {
                     'guess_lang': False,
@@ -93,6 +111,13 @@ def convert_md_to_html(input_file, output_file):
             border-radius: 0.3rem;
             font-family: Consolas, 'Courier New', monospace;
             font-size: 0.95rem;
+        }
+        del {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+        ul li {
+            margin-bottom: 0.35rem;
         }
         pre {
             margin: 1rem 0;

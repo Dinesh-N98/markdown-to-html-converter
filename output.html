@@ -71,6 +71,13 @@
             font-family: Consolas, 'Courier New', monospace;
             font-size: 0.95rem;
         }
+        del {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+        ul li {
+            margin-bottom: 0.35rem;
+        }
         pre {
             margin: 1rem 0;
             padding: 1rem;
@@ -159,22 +166,28 @@
 <p>This is a standard paragraph of text. Markdown is a lightweight markup language used widely for project documentation, static websites, and technical blogging.</p>
 <hr>
 <h2>Typography &amp; Emphasis</h2>
-<p>You can easily style text to add emphasis:
-*   This text is <strong>bold</strong> (using double asterisks).
-*   This text is <em>italicized</em> (using single asterisks).
-*   This text has a ~~strikethrough~~ applied.
-*   You can also combine them to make text <strong><em>bold and italic</em></strong>.</p>
+<p>You can easily style text to add emphasis:</p>
+<ul>
+<li>This text is <strong>bold</strong> (using double asterisks).</li>
+<li>This text is <em>italicized</em> (using single asterisks).</li>
+<li>This text has a <del>strikethrough</del> applied.</li>
+<li>You can also combine them to make text <strong><em>bold and italic</em></strong>.</li>
+</ul>
 <hr>
 <h2>Lists</h2>
 <h3>Unordered List</h3>
 <ul>
 <li>First item</li>
-<li>Second item<ul>
+<li>
+<p>Second item</p>
+<ul>
 <li>Sub-item A</li>
 <li>Sub-item B</li>
 </ul>
 </li>
-<li>Third item</li>
+<li>
+<p>Third item</p>
+</li>
 </ul>
 <h3>Ordered List</h3>
 <ol>
