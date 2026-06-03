@@ -14,6 +14,12 @@ def normalize_markdown(markdown_text):
 
     normalized_text = '\n'.join(normalized_lines)
     normalized_text = re.sub(r'~~(.*?)~~', r'<del>\1</del>', normalized_text, flags=re.S)
+    normalized_text = re.sub(
+        r'^(\s*(?:[-+*]|\d+\.))\s*\[([ xX])\]\s+',
+        lambda m: f"{m.group(1)} <input type=\"checkbox\" disabled{' checked' if m.group(2).lower() == 'x' else ''}> ",
+        normalized_text,
+        flags=re.M
+    )
     return normalized_text
 
 def convert_md_to_html(input_file, output_file):

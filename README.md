@@ -19,6 +19,7 @@ The converter handles many common Markdown features, including:
 - paragraphs
 - blockquotes
 - lists
+- task lists (`- [ ]`, `- [x]`) with disabled checkboxes
 - fenced code blocks
 - tables
 - inline code and code blocks
@@ -30,7 +31,6 @@ The converter handles many common Markdown features, including:
 This converter does not cover every Markdown flavor or extension. It may not support:
 
 - footnotes
-- task lists (`- [ ]`, `- [x]`)
 - definition lists
 - math blocks / inline math
 - YAML front matter
