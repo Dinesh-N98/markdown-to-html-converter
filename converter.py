@@ -9,22 +9,176 @@ def convert_md_to_html(input_file, output_file):
         # 2. Use the markdown library to convert the text to HTML strings
         html_content = markdown.markdown(
             markdown_text,
-            extensions=["fenced_code", "tables"],
+            extensions=["fenced_code", "tables", "codehilite"],
+            extension_configs={
+                'codehilite': {
+                    'guess_lang': False,
+                    'noclasses': True,
+                    'pygments_style': 'monokai'
+                }
+            },
             output_format="html5"
         )
         
-        # 3. Wrap the content in a basic HTML5 skeleton so it renders properly in browsers
-        full_html = f"""<!DOCTYPE html>
+        # 3. Wrap the content in a styled HTML5 skeleton so it renders nicely in browsers
+        full_html = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Converted Document</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+            background: #f6f7fb;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #1a202c;
+            margin-top: 1.6rem;
+            margin-bottom: 0.75rem;
+        }
+        h1 { font-size: 2.4rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.6rem; }
+        p {
+            margin: 0 0 1rem 0;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #d2d6dc;
+            margin: 2rem 0;
+        }
+        a {
+            color: #1d4ed8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        blockquote {
+            border-left: 4px solid #6b7280;
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+            background: #ffffff;
+            color: #4b5563;
+        }
+        ul, ol {
+            margin: 0 0 1rem 1.5rem;
+            padding: 0;
+        }
+        ul ul, ol ol, ul ol, ol ul {
+            margin-top: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #ffffff;
+        }
+        table th,
+        table td {
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 0.9rem;
+        }
+        table th {
+            background: #e5e7eb;
+        }
+        code {
+            background: #f3f4f6;
+            padding: 0.15rem 0.3rem;
+            border-radius: 0.3rem;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+        pre {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #0d1117;
+            color: #d6deeb;
+            overflow-x: auto;
+            border-radius: 0.65rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+        }
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+        .codehilite {
+            background: #0d1117;
+            color: #d6deeb;
+        }
+        .codehilite .hll { background-color: #21262d }
+        .codehilite .c { color: #6a737d; font-style: italic }
+        .codehilite .err { color: #f97583; background-color: #fff0f1 }
+        .codehilite .k { color: #ff7b72 }
+        .codehilite .o { color: #79c0ff }
+        .codehilite .ch { color: #8b949e }
+        .codehilite .cm { color: #6a737d; font-style: italic }
+        .codehilite .cp { color: #8b949e }
+        .codehilite .c1 { color: #6a737d; font-style: italic }
+        .codehilite .cs { color: #6a737d; font-style: italic }
+        .codehilite .gd { color: #ff7b72 }
+        .codehilite .ge { font-style: italic }
+        .codehilite .gi { color: #56d364 }
+        .codehilite .go { color: #8b949e }
+        .codehilite .gp { color: #8b949e }
+        .codehilite .gs { font-weight: bold }
+        .codehilite .gu { color: #8b949e }
+        .codehilite .kc { color: #ff7b72 }
+        .codehilite .kd { color: #ff7b72 }
+        .codehilite .kn { color: #ff7b72 }
+        .codehilite .kp { color: #ff7b72 }
+        .codehilite .kr { color: #ff7b72 }
+        .codehilite .kt { color: #f2cc8f }
+        .codehilite .m { color: #f2cc8f }
+        .codehilite .s { color: #a5d6ff }
+        .codehilite .na { color: #ffab70 }
+        .codehilite .nb { color: #79c0ff }
+        .codehilite .nc { color: #7ee787 }
+        .codehilite .no { color: #f2cc8f }
+        .codehilite .nd { color: #7ee787 }
+        .codehilite .ni { color: #8b949e }
+        .codehilite .ne { color: #ff7b72 }
+        .codehilite .nf { color: #79c0ff }
+        .codehilite .nl { color: #79c0ff }
+        .codehilite .nn { color: #7ee787 }
+        .codehilite .nt { color: #79c0ff }
+        .codehilite .nv { color: #79c0ff }
+        .codehilite .ow { color: #79c0ff }
+        .codehilite .w { color: #c9d1d9 }
+        .codehilite .mf { color: #f2cc8f }
+        .codehilite .mh { color: #f2cc8f }
+        .codehilite .mi { color: #f2cc8f }
+        .codehilite .mo { color: #f2cc8f }
+        .codehilite .sb { color: #a5d6ff }
+        .codehilite .sc { color: #a5d6ff }
+        .codehilite .sd { color: #a5d6ff }
+        .codehilite .s2 { color: #a5d6ff }
+        .codehilite .se { color: #ff7b72 }
+        .codehilite .sh { color: #a5d6ff }
+        .codehilite .si { color: #ff7b72 }
+        .codehilite .sx { color: #a5d6ff }
+        .codehilite .sr { color: #79c0ff }
+        .codehilite .s1 { color: #a5d6ff }
+        .codehilite .ss { color: #a5d6ff }
+        .codehilite .bp { color: #79c0ff }
+        .codehilite .vc { color: #79c0ff }
+        .codehilite .vg { color: #79c0ff }
+        .codehilite .vi { color: #79c0ff }
+        .codehilite .il { color: #f2cc8f }
+    </style>
 </head>
 <body>
-{html_content}
+{{content}}
 </body>
-</html>"""
+</html>""".replace("{{content}}", html_content)
         
         # 4. Write the complete HTML string into the output file
         with open(output_file, 'w', encoding='utf-8') as f:
