@@ -7,7 +7,11 @@ def convert_md_to_html(input_file, output_file):
             markdown_text = f.read()
         
         # 2. Use the markdown library to convert the text to HTML strings
-        html_content = markdown.markdown(markdown_text)
+        html_content = markdown.markdown(
+            markdown_text,
+            extensions=["fenced_code", "tables"],
+            output_format="html5"
+        )
         
         # 3. Wrap the content in a basic HTML5 skeleton so it renders properly in browsers
         full_html = f"""<!DOCTYPE html>
