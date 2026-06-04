@@ -5,8 +5,8 @@ import sys
 import markdown
 
 # Pre-compile regex patterns for better performance
-_LIST_PATTERN = re.compile(r'^(?:\* |\+ |-|\d+\.\s)', re.MULTILINE)
-_PREV_LINE_PATTERN = re.compile(r'^(?:\* |\+ |-|\d+\.\s|> |#{1,6} |---|\*\*\*|___)', re.MULTILINE)
+_LIST_PATTERN = re.compile(r'^(?:[ \t]{0,3}(?:\* |\+ |-|\d+\.\s))', re.MULTILINE)
+_PREV_LINE_PATTERN = re.compile(r'^(?:[ \t]{0,3}(?:\* |\+ |-|\d+\.\s)|> |#{1,6} |---|\*\*\*|___)', re.MULTILINE)
 _STRIKETHROUGH_PATTERN = re.compile(r'~~(.*?)~~', re.S)
 _CHECKBOX_PATTERN = re.compile(r'^(\s*(?:[-+*]|\d+\.))\s*\[([ xX])\]\s+', re.M)
 
