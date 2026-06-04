@@ -1,51 +1,4 @@
-import re
-import markdown
-
-def normalize_markdown(markdown_text):
-    # Ensure markdown lists are recognized when they come directly after a paragraph.
-    lines = markdown_text.splitlines()
-    normalized_lines = []
-    for index, line in enumerate(lines):
-        if re.match(r'^(?:\* |\+ |-|\d+\.\s)', line):
-            previous = lines[index - 1] if index > 0 else ''
-            if previous.strip() != '' and not re.match(r'^(?:\* |\+ |-|\d+\.\s|> |#{1,6} |---|\*\*\*|___)', previous):
-                normalized_lines.append('')
-        normalized_lines.append(line)
-
-    normalized_text = '\n'.join(normalized_lines)
-    normalized_text = re.sub(r'~~(.*?)~~', r'<del>\1</del>', normalized_text, flags=re.S)
-    normalized_text = re.sub(
-        r'^(\s*(?:[-+*]|\d+\.))\s*\[([ xX])\]\s+',
-        lambda m: f"{m.group(1)} <input type=\"checkbox\" disabled{' checked' if m.group(2).lower() == 'x' else ''}> ",
-        normalized_text,
-        flags=re.M
-    )
-    return normalized_text
-
-def convert_md_to_html(input_file, output_file):
-    try:
-        # 1. Open and read the contents of the Markdown file
-        with open(input_file, 'r', encoding='utf-8') as f:
-            markdown_text = f.read()
-        
-        markdown_text = normalize_markdown(markdown_text)
-        
-        # 2. Use the markdown library to convert the text to HTML strings
-        html_content = markdown.markdown(
-            markdown_text,
-            extensions=["fenced_code", "tables", "codehilite", "sane_lists"],
-            extension_configs={
-                'codehilite': {
-                    'guess_lang': False,
-                    'noclasses': True,
-                    'pygments_style': 'monokai'
-                }
-            },
-            output_format="html5"
-        )
-        
-        # 3. Wrap the content in a styled HTML5 skeleton so it renders nicely in browsers
-        full_html = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -207,39 +160,100 @@ def convert_md_to_html(input_file, output_file):
     </style>
 </head>
 <body>
-{{content}}
+<h1>Heading Level 1</h1>
+<h2>Heading Level 2</h2>
+<h3>Heading Level 3</h3>
+<p>This is a standard paragraph of text. Markdown is a lightweight markup language used widely for project documentation, static websites, and technical blogging.</p>
+<hr>
+<h2>Typography &amp; Emphasis</h2>
+<p>You can easily style text to add emphasis:</p>
+<ul>
+<li>This text is <strong>bold</strong> (using double asterisks).</li>
+<li>This text is <em>italicized</em> (using single asterisks).</li>
+<li>This text has a <del>strikethrough</del> applied.</li>
+<li>You can also combine them to make text <strong><em>bold and italic</em></strong>.</li>
+</ul>
+<hr>
+<h2>Lists</h2>
+<h3>Unordered List</h3>
+<ul>
+<li>First item</li>
+<li>
+<p>Second item</p>
+<ul>
+<li>Sub-item A</li>
+<li>Sub-item B</li>
+</ul>
+</li>
+<li>
+<p>Third item</p>
+</li>
+</ul>
+<h3>Ordered List</h3>
+<ol>
+<li>Open your text editor.</li>
+<li>Write your markdown text.</li>
+<li>Save the file with a <code>.md</code> extension.</li>
+</ol>
+<hr>
+<h2>Links and Images</h2>
+<h3>Link</h3>
+<p>You can read more documentation on the official <a href="https://www.markdownguide.org/">Markdown Guide Website</a>.</p>
+<h3>Image</h3>
+<p><img alt="Markdown Logo" src="https://wikimedia.org"></p>
+<hr>
+<h2>Blockquotes</h2>
+<blockquote>
+<p>"Markdown is intended to be as easy-to-read and easy-to-write as is feasible."</p>
+<p>— <em>John Gruber, Creator of Markdown</em></p>
+</blockquote>
+<hr>
+<h2>Code Snippets</h2>
+<h3>Inline Code</h3>
+<p>To display a variable name or a short command within a sentence, wrap it in backticks like <code>const user = "John";</code>.</p>
+<h3>Fenced Code Block</h3>
+<p>For larger blocks of code, use three backticks before and after the block. You can also add the language name for syntax highlighting:</p>
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">greetUser</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">) {</span>
+<span style="color: #F8F8F2">    </span><span style="color: #A6E22E">console</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">`Hello, ${</span><span style="color: #A6E22E">name</span><span style="color: #E6DB74">}! Welcome to Markdown.`</span><span style="color: #F8F8F2">);</span>
+<span style="color: #F8F8F2">}</span>
+
+<span style="color: #A6E22E">greetUser</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&quot;Developer&quot;</span><span style="color: #F8F8F2">);</span>
+</code></pre></div>
+
+<hr>
+<h2>Tables</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Product ID</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: center;">Price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">#1042</td>
+<td style="text-align: left;">Mechanical Keyboard</td>
+<td style="text-align: center;">$89.99</td>
+</tr>
+<tr>
+<td style="text-align: left;">#2081</td>
+<td style="text-align: left;">Wireless Ergonomic Mouse</td>
+<td style="text-align: center;">$45.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">#3014</td>
+<td style="text-align: left;">27-inch 4K Monitor</td>
+<td style="text-align: center;">$299.99</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Task Lists</h2>
+<ul>
+<li><input type="checkbox" disabled checked> Create a sample markdown file</li>
+<li><input type="checkbox" disabled> Add custom layouts</li>
+<li><input type="checkbox" disabled> Render the output in a browser</li>
+</ul>
 </body>
-</html>""".replace("{{content}}", html_content)
-        
-        # 4. Write the complete HTML string into the output file
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(full_html)
-            
-        print(f"Success! '{input_file}' has been converted to '{output_file}'.")
-
-    except FileNotFoundError:
-        print(f"Error: The file '{input_file}' could not be found.")
-
-# Run the function using our files
-if __name__ == "__main__":
-    import argparse
-    import os
-    import sys
-
-    parser = argparse.ArgumentParser(description="Convert a Markdown file to HTML.")
-    parser.add_argument("input", nargs="?", help="Input Markdown file (e.g. README.md)")
-    parser.add_argument("-o", "--output", help="Output HTML file (optional). If omitted, uses the same basename with .html")
-    args = parser.parse_args()
-
-    if not args.input:
-        print("Usage: python converter.py <input.md> [-o output.html]")
-        sys.exit(1)
-
-    input_file = args.input
-    if args.output:
-        output_file = args.output
-    else:
-        base, ext = os.path.splitext(input_file)
-        output_file = base + ".html" if ext else input_file + ".html"
-
-    convert_md_to_html(input_file, output_file)
+</html>
