@@ -73,165 +73,99 @@ def convert_md_to_html(input_file, output_file):
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Converted Document</title>
     <style>
-        * {{
-            box-sizing: border-box;
-        }}
         body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
             color: #333;
             margin: 0;
-            padding: 2rem 1rem;
-            background: linear-gradient(135deg, #f6f7fb 0%, #f0f2f9 100%);
-            max-width: 900px;
-            margin: 0 auto;
+            padding: 2rem;
+            background: #f6f7fb;
         }}
         h1, h2, h3, h4, h5, h6 {{
             color: #1a202c;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-            line-height: 1.3;
+            margin-top: 1.6rem;
+            margin-bottom: 0.75rem;
         }}
-        h1 {{ 
-            font-size: 2.5rem;
-            border-bottom: 3px solid #1d4ed8;
-            padding-bottom: 0.5rem;
-        }}
-        h2 {{ 
-            font-size: 2rem;
-            color: #1d4ed8;
-        }}
+        h1 {{ font-size: 2.4rem; }}
+        h2 {{ font-size: 2rem; }}
         h3 {{ font-size: 1.6rem; }}
-        h4 {{ font-size: 1.3rem; }}
         p {{
-            margin: 1rem 0;
-            text-align: justify;
+            margin: 0 0 1rem 0;
         }}
         hr {{
             border: none;
-            border-top: 2px solid #d2d6dc;
-            margin: 2.5rem 0;
-            opacity: 0.6;
+            border-top: 1px solid #d2d6dc;
+            margin: 2rem 0;
         }}
         a {{
             color: #1d4ed8;
             text-decoration: none;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid transparent;
         }}
         a:hover {{
             text-decoration: underline;
-            border-bottom-color: #1d4ed8;
-        }}
-        a:focus {{
-            outline: 2px solid #1d4ed8;
-            outline-offset: 2px;
         }}
         blockquote {{
-            border-left: 5px solid #1d4ed8;
-            padding: 1.25rem 1.5rem;
+            border-left: 4px solid #6b7280;
+            padding: 1rem 1.25rem;
             margin: 1.5rem 0;
-            background: linear-gradient(90deg, rgba(29, 78, 216, 0.05) 0%, transparent 100%);
+            background: #ffffff;
             color: #4b5563;
-            font-style: italic;
-            border-radius: 0.5rem;
         }}
         ul, ol {{
-            margin: 1.5rem 0;
-            padding-left: 2rem;
+            margin: 0 0 1rem 1.5rem;
+            padding: 0;
         }}
         ul ul, ol ol, ul ol, ol ul {{
-            margin-top: 0.75rem;
-            margin-bottom: 0.75rem;
-        }}
-        ul li, ol li {{
-            margin-bottom: 0.75rem;
-            line-height: 1.8;
-        }}
-        ul li::marker {{
-            color: #1d4ed8;
-            font-weight: 600;
-        }}
-        ol li::marker {{
-            color: #1d4ed8;
-            font-weight: 600;
+            margin-top: 0.5rem;
         }}
         table {{
             width: 100%;
             border-collapse: collapse;
-            margin: 2rem 0;
+            margin: 1rem 0;
             background: #ffffff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border-radius: 0.5rem;
-            overflow: hidden;
+        }}
+        table th,
+        table td {{
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 0.9rem;
         }}
         table th {{
-            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-            color: white;
-            font-weight: 600;
-            padding: 1rem 0.9rem;
-            text-align: left;
-        }}
-        table td {{
-            border-bottom: 1px solid #e5e7eb;
-            padding: 0.9rem;
-        }}
-        table tr:last-child td {{
-            border-bottom: none;
-        }}
-        table tr:hover {{
-            background: #f9fafb;
+            background: #e5e7eb;
         }}
         code {{
-            background: #f3f4f6;
-            padding: 0.2rem 0.4rem;
-            border-radius: 0.35rem;
-            font-family: 'Courier New', Consolas, monospace;
-            font-size: 0.9rem;
-            color: #c41e3a;
+            background: #0d1117;
+            color: #79c0ff;
+            padding: 0.15rem 0.3rem;
+            border-radius: 0.3rem;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 0.95rem;
         }}
         del {{
             text-decoration: line-through;
-            color: #9ca3af;
-            opacity: 0.7;
+            color: #6b7280;
+        }}
+        ul li {{
+            margin-bottom: 0.35rem;
         }}
         pre {{
-            margin: 1.5rem 0;
-            padding: 1.25rem;
+            margin: 1rem 0;
+            padding: 1rem;
             background: #0d1117;
             color: #d6deeb;
             overflow-x: auto;
             border-radius: 0.65rem;
-            box-shadow: 0 4px 12px rgba(13, 17, 23, 0.3);
-            line-height: 1.6;
-            font-size: 0.95rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
         }}
         pre code {{
             background: transparent;
             padding: 0;
             color: inherit;
-            font-size: inherit;
+            font-size: 0.95rem;
             white-space: pre-wrap;
-            word-wrap: break-word;
-        }}
-        pre::-webkit-scrollbar {{
-            height: 8px;
-        }}
-        pre::-webkit-scrollbar-track {{
-            background: #0d1117;
-        }}
-        pre::-webkit-scrollbar-thumb {{
-            background: #30363d;
-            border-radius: 4px;
-        }}
-        pre::-webkit-scrollbar-thumb:hover {{
-            background: #484f58;
         }}
         .codehilite {{
             background: #0d1117;
             color: #d6deeb;
-            border-radius: 0.65rem;
         }}
         .codehilite .hll {{ background-color: #21262d }}
         .codehilite .c, .codehilite .cm, .codehilite .c1, .codehilite .cs {{ color: #6a737d; font-style: italic }}
@@ -247,29 +181,6 @@ def convert_md_to_html(input_file, output_file):
         .codehilite .nc, .codehilite .nd, .codehilite .nn {{ color: #7ee787 }}
         .codehilite .na {{ color: #ffab70 }}
         .codehilite .w {{ color: #c9d1d9 }}
-        input[type="checkbox"] {{
-            margin-right: 0.5rem;
-            cursor: pointer;
-            accent-color: #1d4ed8;
-        }}
-        @media (max-width: 768px) {{
-            body {{
-                padding: 1.5rem 1rem;
-            }}
-            h1 {{ font-size: 2rem; }}
-            h2 {{ font-size: 1.5rem; }}
-            h3 {{ font-size: 1.25rem; }}
-            table {{
-                font-size: 0.9rem;
-            }}
-            table th, table td {{
-                padding: 0.75rem 0.6rem;
-            }}
-            pre {{
-                padding: 1rem;
-                font-size: 0.85rem;
-            }}
-        }}
     </style>
 </head>
 <body>
