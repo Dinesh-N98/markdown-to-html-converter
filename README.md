@@ -46,7 +46,7 @@ This converter does not cover every Markdown flavor or extension. It may not sup
 Run the converter from the command line using Python:
 
 ```bash
-python converter.py
+python converter.py <file-name.md>
 ```
 
 By default, it converts `sample.md` into `output.html`.

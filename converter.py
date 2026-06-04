@@ -198,7 +198,7 @@ def convert_md_to_html(input_file, output_file):
         print(f"Error: The file '{input_file}' could not be found.")
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert a Markdown file to HTML.")
-    parser.add_argument("input", nargs="?", help="Input Markdown file (e.g. README.md)")
+    parser.add_argument("input", nargs="?", help="Input Markdown file (e.g. sample.md)")
     parser.add_argument("-o", "--output", help="Output HTML file (optional). If omitted, uses the same basename with .html")
     args = parser.parse_args()
 
@@ -206,7 +206,10 @@ if __name__ == "__main__":
         print("Usage: python converter.py <input.md> [-o output.html]")
         sys.exit(1)
 
-    input_file = args.input
-    output_file = args.output or os.path.splitext(input_file)[0] + ".html"
+    input_file = os.path.join("import-MD", args.input)
+    if args.output:
+        output_file = os.path.join("export-HTML", args.output)
+    else:
+        output_file = os.path.join("export-HTML", os.path.splitext(args.input)[0] + ".html")
 
     convert_md_to_html(input_file, output_file)
