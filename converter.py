@@ -1,36 +1,57 @@
+import argparse
+import os
 import re
+import sys
 import markdown
 
+# Pre-compile regex patterns for better performance
+_LIST_PATTERN = re.compile(r'^(?:\* |\+ |-|\d+\.\s)', re.MULTILINE)
+_PREV_LINE_PATTERN = re.compile(r'^(?:\* |\+ |-|\d+\.\s|> |#{1,6} |---|\*\*\*|___)', re.MULTILINE)
+_STRIKETHROUGH_PATTERN = re.compile(r'~~(.*?)~~', re.S)
+_CHECKBOX_PATTERN = re.compile(r'^(\s*(?:[-+*]|\d+\.))\s*\[([ xX])\]\s+', re.M)
+
 def normalize_markdown(markdown_text):
-    # Ensure markdown lists are recognized when they come directly after a paragraph.
+    """Normalize markdown text for better HTML conversion.
+    
+    - Adds blank lines before lists following paragraphs
+    - Converts strikethrough (~~text~~) to HTML <del> tags
+    - Converts markdown checkboxes to HTML input elements
+    """
     lines = markdown_text.splitlines()
     normalized_lines = []
+    
+    # Add empty line before lists if needed
     for index, line in enumerate(lines):
-        if re.match(r'^(?:\* |\+ |-|\d+\.\s)', line):
+        if _LIST_PATTERN.match(line):
             previous = lines[index - 1] if index > 0 else ''
-            if previous.strip() != '' and not re.match(r'^(?:\* |\+ |-|\d+\.\s|> |#{1,6} |---|\*\*\*|___)', previous):
+            if previous.strip() and not _PREV_LINE_PATTERN.match(previous):
                 normalized_lines.append('')
         normalized_lines.append(line)
 
     normalized_text = '\n'.join(normalized_lines)
-    normalized_text = re.sub(r'~~(.*?)~~', r'<del>\1</del>', normalized_text, flags=re.S)
-    normalized_text = re.sub(
-        r'^(\s*(?:[-+*]|\d+\.))\s*\[([ xX])\]\s+',
+    
+    # Apply transformations
+    normalized_text = _STRIKETHROUGH_PATTERN.sub(r'<del>\1</del>', normalized_text)
+    normalized_text = _CHECKBOX_PATTERN.sub(
         lambda m: f"{m.group(1)} <input type=\"checkbox\" disabled{' checked' if m.group(2).lower() == 'x' else ''}> ",
-        normalized_text,
-        flags=re.M
+        normalized_text
     )
     return normalized_text
 
 def convert_md_to_html(input_file, output_file):
+    """Convert a Markdown file to a styled HTML file.
+    
+    Args:
+        input_file: Path to the input Markdown file
+        output_file: Path to the output HTML file
+    """
     try:
-        # 1. Open and read the contents of the Markdown file
+        # Read the markdown file
         with open(input_file, 'r', encoding='utf-8') as f:
             markdown_text = f.read()
         
+        # Normalize markdown and convert to HTML
         markdown_text = normalize_markdown(markdown_text)
-        
-        # 2. Use the markdown library to convert the text to HTML strings
         html_content = markdown.markdown(
             markdown_text,
             extensions=["fenced_code", "tables", "codehilite", "sane_lists"],
@@ -44,88 +65,88 @@ def convert_md_to_html(input_file, output_file):
             output_format="html5"
         )
         
-        # 3. Wrap the content in a styled HTML5 skeleton so it renders nicely in browsers
-        full_html = """<!DOCTYPE html>
+        # Create HTML5 template with styling
+        full_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Converted Document</title>
     <style>
-        body {
+        body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.7;
             color: #333;
             margin: 0;
             padding: 2rem;
             background: #f6f7fb;
-        }
-        h1, h2, h3, h4, h5, h6 {
+        }}
+        h1, h2, h3, h4, h5, h6 {{
             color: #1a202c;
             margin-top: 1.6rem;
             margin-bottom: 0.75rem;
-        }
-        h1 { font-size: 2.4rem; }
-        h2 { font-size: 2rem; }
-        h3 { font-size: 1.6rem; }
-        p {
+        }}
+        h1 {{ font-size: 2.4rem; }}
+        h2 {{ font-size: 2rem; }}
+        h3 {{ font-size: 1.6rem; }}
+        p {{
             margin: 0 0 1rem 0;
-        }
-        hr {
+        }}
+        hr {{
             border: none;
             border-top: 1px solid #d2d6dc;
             margin: 2rem 0;
-        }
-        a {
+        }}
+        a {{
             color: #1d4ed8;
             text-decoration: none;
-        }
-        a:hover {
+        }}
+        a:hover {{
             text-decoration: underline;
-        }
-        blockquote {
+        }}
+        blockquote {{
             border-left: 4px solid #6b7280;
             padding: 1rem 1.25rem;
             margin: 1.5rem 0;
             background: #ffffff;
             color: #4b5563;
-        }
-        ul, ol {
+        }}
+        ul, ol {{
             margin: 0 0 1rem 1.5rem;
             padding: 0;
-        }
-        ul ul, ol ol, ul ol, ol ul {
+        }}
+        ul ul, ol ol, ul ol, ol ul {{
             margin-top: 0.5rem;
-        }
-        table {
+        }}
+        table {{
             width: 100%;
             border-collapse: collapse;
             margin: 1rem 0;
             background: #ffffff;
-        }
+        }}
         table th,
-        table td {
+        table td {{
             border: 1px solid #d1d5db;
             padding: 0.75rem 0.9rem;
-        }
-        table th {
+        }}
+        table th {{
             background: #e5e7eb;
-        }
-        code {
+        }}
+        code {{
             background: #f3f4f6;
             padding: 0.15rem 0.3rem;
             border-radius: 0.3rem;
             font-family: Consolas, 'Courier New', monospace;
             font-size: 0.95rem;
-        }
-        del {
+        }}
+        del {{
             text-decoration: line-through;
             color: #6b7280;
-        }
-        ul li {
+        }}
+        ul li {{
             margin-bottom: 0.35rem;
-        }
-        pre {
+        }}
+        pre {{
             margin: 1rem 0;
             padding: 1rem;
             background: #0d1117;
@@ -133,85 +154,85 @@ def convert_md_to_html(input_file, output_file):
             overflow-x: auto;
             border-radius: 0.65rem;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
-        }
-        pre code {
+        }}
+        pre code {{
             background: transparent;
             padding: 0;
             color: inherit;
             font-size: 0.95rem;
             white-space: pre-wrap;
-        }
-        .codehilite {
+        }}
+        .codehilite {{
             background: #0d1117;
             color: #d6deeb;
-        }
-        .codehilite .hll { background-color: #21262d }
-        .codehilite .c { color: #6a737d; font-style: italic }
-        .codehilite .err { color: #f97583; background-color: #fff0f1 }
-        .codehilite .k { color: #ff7b72 }
-        .codehilite .o { color: #79c0ff }
-        .codehilite .ch { color: #8b949e }
-        .codehilite .cm { color: #6a737d; font-style: italic }
-        .codehilite .cp { color: #8b949e }
-        .codehilite .c1 { color: #6a737d; font-style: italic }
-        .codehilite .cs { color: #6a737d; font-style: italic }
-        .codehilite .gd { color: #ff7b72 }
-        .codehilite .ge { font-style: italic }
-        .codehilite .gi { color: #56d364 }
-        .codehilite .go { color: #8b949e }
-        .codehilite .gp { color: #8b949e }
-        .codehilite .gs { font-weight: bold }
-        .codehilite .gu { color: #8b949e }
-        .codehilite .kc { color: #ff7b72 }
-        .codehilite .kd { color: #ff7b72 }
-        .codehilite .kn { color: #ff7b72 }
-        .codehilite .kp { color: #ff7b72 }
-        .codehilite .kr { color: #ff7b72 }
-        .codehilite .kt { color: #f2cc8f }
-        .codehilite .m { color: #f2cc8f }
-        .codehilite .s { color: #a5d6ff }
-        .codehilite .na { color: #ffab70 }
-        .codehilite .nb { color: #79c0ff }
-        .codehilite .nc { color: #7ee787 }
-        .codehilite .no { color: #f2cc8f }
-        .codehilite .nd { color: #7ee787 }
-        .codehilite .ni { color: #8b949e }
-        .codehilite .ne { color: #ff7b72 }
-        .codehilite .nf { color: #79c0ff }
-        .codehilite .nl { color: #79c0ff }
-        .codehilite .nn { color: #7ee787 }
-        .codehilite .nt { color: #79c0ff }
-        .codehilite .nv { color: #79c0ff }
-        .codehilite .ow { color: #79c0ff }
-        .codehilite .w { color: #c9d1d9 }
-        .codehilite .mf { color: #f2cc8f }
-        .codehilite .mh { color: #f2cc8f }
-        .codehilite .mi { color: #f2cc8f }
-        .codehilite .mo { color: #f2cc8f }
-        .codehilite .sb { color: #a5d6ff }
-        .codehilite .sc { color: #a5d6ff }
-        .codehilite .sd { color: #a5d6ff }
-        .codehilite .s2 { color: #a5d6ff }
-        .codehilite .se { color: #ff7b72 }
-        .codehilite .sh { color: #a5d6ff }
-        .codehilite .si { color: #ff7b72 }
-        .codehilite .sx { color: #a5d6ff }
-        .codehilite .sr { color: #79c0ff }
-        .codehilite .s1 { color: #a5d6ff }
-        .codehilite .ss { color: #a5d6ff }
-        .codehilite .bp { color: #79c0ff }
-        .codehilite .vc { color: #79c0ff }
-        .codehilite .vg { color: #79c0ff }
-        .codehilite .vi { color: #79c0ff }
-        .codehilite .il { color: #f2cc8f }
+        }}
+        .codehilite .hll {{ background-color: #21262d }}
+        .codehilite .c {{ color: #6a737d; font-style: italic }}
+        .codehilite .err {{ color: #f97583; background-color: #fff0f1 }}
+        .codehilite .k {{ color: #ff7b72 }}
+        .codehilite .o {{ color: #79c0ff }}
+        .codehilite .ch {{ color: #8b949e }}
+        .codehilite .cm {{ color: #6a737d; font-style: italic }}
+        .codehilite .cp {{ color: #8b949e }}
+        .codehilite .c1 {{ color: #6a737d; font-style: italic }}
+        .codehilite .cs {{ color: #6a737d; font-style: italic }}
+        .codehilite .gd {{ color: #ff7b72 }}
+        .codehilite .ge {{ font-style: italic }}
+        .codehilite .gi {{ color: #56d364 }}
+        .codehilite .go {{ color: #8b949e }}
+        .codehilite .gp {{ color: #8b949e }}
+        .codehilite .gs {{ font-weight: bold }}
+        .codehilite .gu {{ color: #8b949e }}
+        .codehilite .kc {{ color: #ff7b72 }}
+        .codehilite .kd {{ color: #ff7b72 }}
+        .codehilite .kn {{ color: #ff7b72 }}
+        .codehilite .kp {{ color: #ff7b72 }}
+        .codehilite .kr {{ color: #ff7b72 }}
+        .codehilite .kt {{ color: #f2cc8f }}
+        .codehilite .m {{ color: #f2cc8f }}
+        .codehilite .s {{ color: #a5d6ff }}
+        .codehilite .na {{ color: #ffab70 }}
+        .codehilite .nb {{ color: #79c0ff }}
+        .codehilite .nc {{ color: #7ee787 }}
+        .codehilite .no {{ color: #f2cc8f }}
+        .codehilite .nd {{ color: #7ee787 }}
+        .codehilite .ni {{ color: #8b949e }}
+        .codehilite .ne {{ color: #ff7b72 }}
+        .codehilite .nf {{ color: #79c0ff }}
+        .codehilite .nl {{ color: #79c0ff }}
+        .codehilite .nn {{ color: #7ee787 }}
+        .codehilite .nt {{ color: #79c0ff }}
+        .codehilite .nv {{ color: #79c0ff }}
+        .codehilite .ow {{ color: #79c0ff }}
+        .codehilite .w {{ color: #c9d1d9 }}
+        .codehilite .mf {{ color: #f2cc8f }}
+        .codehilite .mh {{ color: #f2cc8f }}
+        .codehilite .mi {{ color: #f2cc8f }}
+        .codehilite .mo {{ color: #f2cc8f }}
+        .codehilite .sb {{ color: #a5d6ff }}
+        .codehilite .sc {{ color: #a5d6ff }}
+        .codehilite .sd {{ color: #a5d6ff }}
+        .codehilite .s2 {{ color: #a5d6ff }}
+        .codehilite .se {{ color: #ff7b72 }}
+        .codehilite .sh {{ color: #a5d6ff }}
+        .codehilite .si {{ color: #ff7b72 }}
+        .codehilite .sx {{ color: #a5d6ff }}
+        .codehilite .sr {{ color: #79c0ff }}
+        .codehilite .s1 {{ color: #a5d6ff }}
+        .codehilite .ss {{ color: #a5d6ff }}
+        .codehilite .bp {{ color: #79c0ff }}
+        .codehilite .vc {{ color: #79c0ff }}
+        .codehilite .vg {{ color: #79c0ff }}
+        .codehilite .vi {{ color: #79c0ff }}
+        .codehilite .il {{ color: #f2cc8f }}
     </style>
 </head>
 <body>
-{{content}}
+{html_content}
 </body>
-</html>""".replace("{{content}}", html_content)
+</html>"""
         
-        # 4. Write the complete HTML string into the output file
+        # Write the HTML to output file
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(full_html)
             
@@ -219,13 +240,7 @@ def convert_md_to_html(input_file, output_file):
 
     except FileNotFoundError:
         print(f"Error: The file '{input_file}' could not be found.")
-
-# Run the function using our files
 if __name__ == "__main__":
-    import argparse
-    import os
-    import sys
-
     parser = argparse.ArgumentParser(description="Convert a Markdown file to HTML.")
     parser.add_argument("input", nargs="?", help="Input Markdown file (e.g. README.md)")
     parser.add_argument("-o", "--output", help="Output HTML file (optional). If omitted, uses the same basename with .html")
@@ -236,10 +251,6 @@ if __name__ == "__main__":
         sys.exit(1)
 
     input_file = args.input
-    if args.output:
-        output_file = args.output
-    else:
-        base, ext = os.path.splitext(input_file)
-        output_file = base + ".html" if ext else input_file + ".html"
+    output_file = args.output or os.path.splitext(input_file)[0] + ".html"
 
     convert_md_to_html(input_file, output_file)
