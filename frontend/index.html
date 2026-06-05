@@ -5,21 +5,24 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Markdown to HTML Converter</title>
-	</head>
+	<link rel="stylesheet" href="/static/style.css">
+</head>
+
 <body>
 	<div class="card">
 		<h1>Markdown to HTML Converter</h1>
 
 		<div class="controls">
 			<input id="mdFile" type="file" accept=".md,text/markdown,text/plain">
+			<div class="file-name" id="fileName"></div>
 			<button id="convertBtn">Convert</button>
+			<div class="status" id="status"></div>
 		</div>
 		
 	</div>
 
-	<footer></footer>
+	<footer><p>Convert your markdown files to HTML</p></footer>
 
-	<script>
-	</script>
+	<script src="/static/script.js"></script>
 </body>
 </html>
