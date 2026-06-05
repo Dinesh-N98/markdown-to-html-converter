@@ -207,10 +207,30 @@ if __name__ == "__main__":
         print("Usage: python converter.py <input.md> [-o output.html]")
         sys.exit(1)
 
-    input_file = os.path.join("import-MD", args.input)
-    if args.output:
-        output_file = os.path.join("export-HTML", args.output)
+    # Resolve input path: accept direct path or fall back to import-MD/<name>
+    if os.path.exists(args.input):
+        input_file = args.input
     else:
-        output_file = os.path.join("export-HTML", os.path.splitext(args.input)[0] + ".html")
+        alt = os.path.join("backend", "import-MD", args.input)
+        if os.path.exists(alt):
+            input_file = alt
+        else:
+            input_file = alt  # keep original behavior so convert reports the missing path
+
+    # Ensure output directory exists; default to backend/export-HTML
+    out_dir = os.path.join("backend", "export-HTML")
+    if args.output:
+        # If user provided a path, use its dir; otherwise use out_dir
+        output_file = args.output
+        out_parent = os.path.dirname(output_file) or out_dir
+    else:
+        output_file = os.path.join(out_dir, os.path.splitext(os.path.basename(args.input))[0] + ".html")
+        out_parent = out_dir
+
+    if not os.path.exists(out_parent):
+        try:
+            os.makedirs(out_parent, exist_ok=True)
+        except OSError:
+            pass
 
     convert_md_to_html(input_file, output_file)
