@@ -1,93 +1,142 @@
 # Markdown to HTML Converter
 
-A small Python utility that converts a Markdown file into a styled HTML document.
+A compact utility and small web app that converts Markdown files into HTML.
 
-## Features
+## Quick features
 
-- Converts headings, paragraphs, blockquotes, lists, and tables
-- Supports fenced code blocks with syntax highlighting
-- Converts inline code and code blocks
-- Adds clean HTML skeleton and simple default styling
-- Custom support for strikethrough using `~~text~~`
-- Includes normalization to help lists render correctly when they follow a paragraph
-
-## What it covers
-
-The converter handles many common Markdown features with optimizations for performance and rendering:
-
-- headings (`#`, `##`, etc.)
-- paragraphs
-- blockquotes
-- lists (both ordered and unordered, with proper normalization)
-- task lists (`- [ ]`, `- [x]`) with HTML disabled checkboxes
-- fenced code blocks
-- tables
-- inline code and code blocks
-- syntax highlighting via `codehilite` (Monokai theme)
-- strikethrough via custom `~~text~~` replacement
-- pre-compiled regex patterns for improved performance
-- responsive HTML5 template with modern styling
-- automatic list normalization to prevent rendering issues
+- Converts headings, paragraphs, blockquotes, ordered and unordered lists
+- Converts tables and task lists
+- Converts fenced code blocks, inline code, and syntax highlighting via `codehilite`
+- Strikethrough (`~~text~~`) and checkbox normalization
+- Opinionated, responsive HTML template included
 
 ## What it may miss
 
-This converter does not cover every Markdown flavor or extension. It may not support:
-
-- footnotes
-- definition lists
-- math blocks / inline math
-- YAML front matter
-- emoji shortcuts
-- admonitions / callouts
-- automatic table of contents
-- some GitHub Flavored Markdown edge cases
-- custom HTML attributes or raw HTML in Markdown
-- other `markdown` package extensions that are not enabled
-
-## Usage
-
-Run the converter from the command line using Python:
-
-```bash
-python converter.py <file-name.md>
-python converter.py <file-name.md> -o <output-name.html>
-```
-
-**File Locations:**
-- Input files should be placed in the `import-MD/` directory
-- Output HTML files are automatically saved to the `export-HTML/` directory
-
-**Arguments:**
-- `<file-name.md>`: Required. The Markdown file to convert (referenced from `import-MD/`)
-- `-o, --output`: Optional. Specify a custom output filename. If omitted, the output filename is derived from the input filename (e.g., `sample.md` → `sample.html`)
+- Footnotes, definition lists, and some extended Markdown flavors
+- Math blocks / inline LaTeX rendering
+- YAML front matter handling
+- GitHub-specific markdown edge cases and raw HTML passthrough
+- Advanced extensions (admonitions, automatic TOC, emoji shortcuts)
 
 ## Requirements
 
-- Python 3
-- `markdown` package
+- Python 3.7+
+- Python packages: `markdown`, `flask`, `pygments`
 
-Install the package with:
+## Install from GitHub
+
+Clone the repo:
 
 ```bash
-pip install markdown
+git clone https://github.com/Dinesh-N98/markdown-to-html-converter.git
+cd markdown-to-html-converter
 ```
 
-## Styling
+Or download the ZIP from GitHub, extract it, then `cd` into the extracted folder.
 
-The converter includes comprehensive built-in styling with:
+Optional: create and activate a virtual environment:
 
-- Clean, modern design using system fonts
-- Dark code blocks with Monokai syntax highlighting
-- Responsive typography and spacing
-- Styled tables, blockquotes, and lists
-- Proper handling of code elements with syntax highlighting
-- Optimized for readability across different screen sizes
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS / Linux
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install markdown flask pygments
+```
+
+Run the server:
+
+```bash
+python server/server.py
+```
+
+
+## Web app
+
+- Frontend: `frontend/` (served at `/`)
+- Static assets: `/static` (points to `frontend/` files)
+
+API endpoints:
+- `POST /convert` — upload a `.md` file (form field `file`); returns JSON `{ output_file, message }`.
+- `GET /export-HTML/<filename>` — serve converted HTML.
+
+Converted files are written to `backend/export-HTML/`; uploaded files are saved to `backend/import-MD/`.
+
+
+## File structure
+
+```
+markdown-to-html-converter/
+├─ converter.py
+├─ README.md
+├─ frontend/
+│  ├─ index.html
+│  ├─ script.js
+│  └─ style.css
+├─ backend/
+│  ├─ import-MD/
+│  └─ export-HTML/
+├─ server/
+│  └─ server.py
+```
+
+## Quickstart
+
+1. Install requirements:
+
+```bash
+pip install markdown flask pygments
+```
+
+2. Convert a file locally (CLI):
+
+```bash
+python converter.py sample.md
+```
+
+- This `sample.md` is in `backend/import-MD/`.
+- If you want to convert a custom Markdown file, copy it into `backend/import-MD/` first.
+- Run the code with your file name in terminal
+
+```bash
+python converter.py <your-file-name.md>
+```
+
+3. After conversion, the generated HTML file will be written to `backend/export-HTML/`.
+
+4. Run the web UI (from the project root):
+
+```bash
+python server/server.py
+# then open http://localhost:5000
+```
+
+
+## CLI usage
+
+```bash
+python converter.py <input.md>
+python converter.py <input.md> -o <output.html>
+```
+
+- Input files should be placed in `backend/import-MD/`.
+- Converted HTML files are written to `backend/export-HTML/` by default.
+- If you specify `-o`, the converter will use the provided output path instead.
+
+## Troubleshooting
+
+- Port in use: change the port in `server/server.py`.
+- Missing packages: run the `pip install` command above.
+- Output file not found after conversion: verify the input file was saved to `backend/import-MD/` and check `converter.py` output path.
 
 ## Notes
 
-This is a solid utility for converting common Markdown files to well-styled HTML. The converter prioritizes performance through pre-compiled regex patterns and provides sensible defaults for styling and layout.
+This project favors a simple, practical conversion pipeline. For broader Markdown compatibility or advanced output control, consider `pandoc` or adding more extensions to the `markdown` converter.
 
-For advanced use cases or broader Markdown flavor support, consider:
-- Adding more `markdown` package extensions
-- Using a more full-featured tool like `pandoc` or `commonmark`
-- Customizing the CSS template in `converter.py` for your specific design needs
+If you want, I can also generate a minimal `requirements.txt` and add a short CONTRIBUTING section.
