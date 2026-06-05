@@ -22,6 +22,16 @@ A compact utility and small web app that converts Markdown files into HTML.
 
 - Python 3.7+
 - Python packages: `markdown`, `flask`, `pygments`
+- Install dependencies with `pip install -r requirements.txt`
+
+## Contributing
+
+Contributions are welcome. If you want to help improve the converter:
+
+- Open an issue for bugs or feature requests.
+- Send a pull request with a clear description of your change.
+- Keep changes small and focused, especially for parser or template updates.
+- Use the current dependency list in `requirements.txt`.
 
 ## Install from GitHub
 
@@ -125,4 +135,4 @@ python converter.py <input.md> -o <output.html>
 
 This project favors a simple, practical conversion pipeline. For broader Markdown compatibility or advanced output control, consider `pandoc` or adding more extensions to the `markdown` converter.
 
-If you want, I can also generate a minimal `requirements.txt` and add a short CONTRIBUTING section.
+
