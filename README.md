@@ -54,6 +54,7 @@ Run the server:
 
 ```bash
 python server/server.py
+# then open http://localhost:5000
 ```
 
 
