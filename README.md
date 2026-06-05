@@ -2,7 +2,7 @@
 
 A compact utility and small web app that converts Markdown files into HTML.
 
-## Quick features
+### Quick features
 
 - Converts headings, paragraphs, blockquotes, ordered and unordered lists
 - Converts tables and task lists
@@ -10,7 +10,7 @@ A compact utility and small web app that converts Markdown files into HTML.
 - Strikethrough (`~~text~~`) and checkbox normalization
 - Opinionated, responsive HTML template included
 
-## What it may miss
+### What it may miss
 
 - Footnotes, definition lists, and some extended Markdown flavors
 - Math blocks / inline LaTeX rendering
@@ -18,14 +18,14 @@ A compact utility and small web app that converts Markdown files into HTML.
 - GitHub-specific markdown edge cases and raw HTML passthrough
 - Advanced extensions (admonitions, automatic TOC, emoji shortcuts)
 
-## Requirements
+### Requirements
 
 - Python 3.7+
 - Python packages: `markdown`, `flask`, `pygments`
 
 ## Install from GitHub
 
-Clone the repo:
+1. Clone the repo:
 
 ```bash
 git clone https://github.com/Dinesh-N98/markdown-to-html-converter.git
@@ -44,13 +44,13 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-Install dependencies:
+2. Install dependencies:
 
 ```bash
 pip install markdown flask pygments
 ```
 
-Run the server:
+3. Run the server:
 
 ```bash
 python server/server.py
@@ -87,15 +87,9 @@ markdown-to-html-converter/
 │  └─ server.py
 ```
 
-## Quickstart
+## Backend
 
-1. Install requirements:
-
-```bash
-pip install markdown flask pygments
-```
-
-2. Convert a file locally (CLI):
+### Convert a file locally (CLI):
 
 ```bash
 python converter.py sample.md
@@ -103,31 +97,22 @@ python converter.py sample.md
 
 - This `sample.md` is in `backend/import-MD/`.
 - If you want to convert a custom Markdown file, copy it into `backend/import-MD/` first.
-- Run the code with your file name in terminal
+- Run the code with your file name in CLI
 
 ```bash
 python converter.py <your-file-name.md>
 ```
 
-3. After conversion, the generated HTML file will be written to `backend/export-HTML/`.
-
-4. Run the web UI (from the project root):
-
-```bash
-python server/server.py
-# then open http://localhost:5000
-```
+- After conversion, the generated HTML file will be written to `backend/export-HTML/`.
 
 
-## CLI usage
+### CLI usage
 
 ```bash
 python converter.py <input.md>
 python converter.py <input.md> -o <output.html>
 ```
 
-- Input files should be placed in `backend/import-MD/`.
-- Converted HTML files are written to `backend/export-HTML/` by default.
 - If you specify `-o`, the converter will use the provided output path instead.
 
 ## Troubleshooting
