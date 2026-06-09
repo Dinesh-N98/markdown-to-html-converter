@@ -34,18 +34,33 @@ convertBtn.addEventListener('click', async function() {
 			body: formData
 		});
 
-		const data = await response.json();
-
 		if (!response.ok) {
-			throw new Error(data.error || 'Conversion failed');
+			let errorMessage = 'Conversion failed';
+			const contentType = response.headers.get('content-type') || '';
+			if (contentType.includes('application/json')) {
+				const data = await response.json();
+				errorMessage = data.error || errorMessage;
+			} else {
+				const text = await response.text();
+				errorMessage = text || errorMessage;
+			}
+			throw new Error(errorMessage);
 		}
 
-		showStatus(`✓ ${data.message}`, 'success');
+		const blob = await response.blob();
+		const outputFile = file.name.replace(/\.md$/i, '.html');
+		const downloadUrl = window.URL.createObjectURL(blob);
 
-		// Redirect to the converted HTML file after 1 second
-		setTimeout(() => {
-			window.location.href = `/export-HTML/${data.output_file}`;
-		}, 1000);
+		const downloadLink = document.createElement('a');
+		downloadLink.href = downloadUrl;
+		downloadLink.textContent = `Download ${outputFile}`;
+		downloadLink.className = 'download-link';
+		downloadLink.download = outputFile;
+		
+		showStatus(`✓ Converted ${file.name} successfully. Click the button below to download the HTML file.`, 'success');
+		statusDiv.appendChild(document.createElement('br'));
+		statusDiv.appendChild(downloadLink);
+		setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 10000);
 
 	} catch (error) {
 		showStatus(`Error: ${error.message}`, 'error');

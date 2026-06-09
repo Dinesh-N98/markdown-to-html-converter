@@ -1,7 +1,6 @@
 import argparse
 import os
 import re
-import shutil
 import sys
 import markdown
 
@@ -51,23 +50,35 @@ def convert_md_to_html(input_file, output_file):
         with open(input_file, 'r', encoding='utf-8') as f:
             markdown_text = f.read()
         
-        # Normalize markdown and convert to HTML
-        markdown_text = normalize_markdown(markdown_text)
-        html_content = markdown.markdown(
-            markdown_text,
-            extensions=["fenced_code", "tables", "codehilite", "sane_lists"],
-            extension_configs={
-                'codehilite': {
-                    'guess_lang': False,
-                    'noclasses': True,
-                    'pygments_style': 'monokai'
-                }
-            },
-            output_format="html5"
-        )
-        
-        # Create HTML5 template with styling
-        full_html = f"""<!DOCTYPE html>
+        html_content = convert_markdown_text_to_html(markdown_text)
+
+        # Write the HTML to output file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+            
+        print(f"Success! '{input_file}' has been converted to '{output_file}'.")
+
+    except FileNotFoundError:
+        print(f"Error: The file '{input_file}' could not be found.")
+
+
+def convert_markdown_text_to_html(markdown_text):
+    """Convert markdown text to a full HTML document string."""
+    markdown_text = normalize_markdown(markdown_text)
+    html_content = markdown.markdown(
+        markdown_text,
+        extensions=["fenced_code", "tables", "codehilite", "sane_lists"],
+        extension_configs={
+            'codehilite': {
+                'guess_lang': False,
+                'noclasses': True,
+                'pygments_style': 'monokai'
+            }
+        },
+        output_format="html5"
+    )
+    
+    return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -188,49 +199,23 @@ def convert_md_to_html(input_file, output_file):
 {html_content}
 </body>
 </html>"""
-        
-        # Write the HTML to output file
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(full_html)
-            
-        print(f"Success! '{input_file}' has been converted to '{output_file}'.")
-
-    except FileNotFoundError:
-        print(f"Error: The file '{input_file}' could not be found.")
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert a Markdown file to HTML.")
-    parser.add_argument("input", nargs="?", help="Input Markdown file (e.g. sample.md)")
-    parser.add_argument("-o", "--output", help="Output HTML file (optional). If omitted, uses the same basename with .html")
+    parser.add_argument("input", help="Input Markdown file path")
+    parser.add_argument("-o", "--output", help="Output HTML file path (optional). If omitted, uses the same basename with .html in the current directory")
     args = parser.parse_args()
 
-    if not args.input:
-        print("Usage: python converter.py <input.md> [-o output.html]")
+    if not os.path.exists(args.input):
+        print(f"Error: The file '{args.input}' could not be found.")
         sys.exit(1)
 
-    # Resolve input path: accept direct path or fall back to import-MD/<name>
-    if os.path.exists(args.input):
-        input_file = args.input
-    else:
-        alt = os.path.join("backend", "import-MD", args.input)
-        if os.path.exists(alt):
-            input_file = alt
-        else:
-            input_file = alt  # keep original behavior so convert reports the missing path
-
-    # Ensure output directory exists; default to backend/export-HTML
-    out_dir = os.path.join("backend", "export-HTML")
+    input_file = args.input
     if args.output:
-        # If user provided a path, use its dir; otherwise use out_dir
         output_file = args.output
-        out_parent = os.path.dirname(output_file) or out_dir
+        output_dir = os.path.dirname(output_file)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
     else:
-        output_file = os.path.join(out_dir, os.path.splitext(os.path.basename(args.input))[0] + ".html")
-        out_parent = out_dir
-
-    if not os.path.exists(out_parent):
-        try:
-            os.makedirs(out_parent, exist_ok=True)
-        except OSError:
-            pass
+        output_file = os.path.splitext(os.path.basename(args.input))[0] + ".html"
 
     convert_md_to_html(input_file, output_file)

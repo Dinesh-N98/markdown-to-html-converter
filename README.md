@@ -22,7 +22,6 @@ A compact utility and small web app that converts Markdown files into HTML.
 
 - Python 3.7+
 - Python packages: `markdown`, `flask`, `pygments`
-- Install dependencies with `pip install -r requirements.txt`
 
 ## Contributing
 
@@ -31,7 +30,7 @@ Contributions are welcome. If you want to help improve the converter:
 - Open an issue for bugs or feature requests.
 - Send a pull request with a clear description of your change.
 - Keep changes small and focused, especially for parser or template updates.
-- Use the current dependency list in `requirements.txt`.
+
 
 ## Install from GitHub
 
@@ -74,10 +73,9 @@ python server/server.py
 - Static assets: `/static` (points to `frontend/` files)
 
 API endpoints:
-- `POST /convert` — upload a `.md` file (form field `file`); returns JSON `{ output_file, message }`.
-- `GET /export-HTML/<filename>` — serve converted HTML.
+- `POST /convert` — upload a `.md` file (form field `file`); returns the converted HTML directly as a downloadable attachment.
 
-Converted files are written to `backend/export-HTML/`; uploaded files are saved to `backend/import-MD/`.
+Converted files are not stored on the server for the web app flow.
 
 
 ## File structure
@@ -90,9 +88,6 @@ markdown-to-html-converter/
 │  ├─ index.html
 │  ├─ script.js
 │  └─ style.css
-├─ backend/
-│  ├─ import-MD/
-│  └─ export-HTML/
 ├─ server/
 │  └─ server.py
 ```
@@ -105,34 +100,23 @@ markdown-to-html-converter/
 python converter.py sample.md
 ```
 
-- This `sample.md` is in `backend/import-MD/`.
-- If you want to convert a custom Markdown file, copy it into `backend/import-MD/` first.
-- Run the code with your file name in CLI
-
-```bash
-python converter.py <your-file-name.md>
-```
-
-- After conversion, the generated HTML file will be written to `backend/export-HTML/`.
-
-
-### CLI usage
+- `sample.md` can be any Markdown file accessible from your current directory.
+- The output file is written as `sample.html` in the current directory by default.
+- To choose a specific output location, provide `-o`.
 
 ```bash
 python converter.py <input.md>
 python converter.py <input.md> -o <output.html>
 ```
 
-- If you specify `-o`, the converter will use the provided output path instead.
+- If you specify `-o`, the converter will write to the provided output path.
 
 ## Troubleshooting
 
 - Port in use: change the port in `server/server.py`.
 - Missing packages: run the `pip install` command above.
-- Output file not found after conversion: verify the input file was saved to `backend/import-MD/` and check `converter.py` output path.
+- Output file not found after conversion: verify the input file exists and check `converter.py` output path.
 
 ## Notes
 
 This project favors a simple, practical conversion pipeline. For broader Markdown compatibility or advanced output control, consider `pandoc` or adding more extensions to the `markdown` converter.
-
-
