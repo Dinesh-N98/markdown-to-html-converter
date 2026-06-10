@@ -1,122 +1,47 @@
 import argparse
-import os
+from pathlib import Path
 import re
 import sys
+
 import markdown
 
 # Pre-compile regex patterns for better performance
-_LIST_PATTERN = re.compile(r'^(?:[ \t]{0,3}(?:\* |\+ |-|\d+\.\s))', re.MULTILINE)
-_PREV_LINE_PATTERN = re.compile(r'^(?:[ \t]{0,3}(?:\* |\+ |-|\d+\.\s)|> |#{1,6} |---|\*\*\*|___)', re.MULTILINE)
-_DEF_LIST_TERM_PATTERN = re.compile(r'^[^\s].*$', re.MULTILINE)
-_DEF_LIST_DEFINITION_PATTERN = re.compile(r'^\s*:\s+', re.MULTILINE)
-_FOOTNOTE_DEF_PATTERN = re.compile(r'^\[\^[^\]]+\]:', re.MULTILINE)
+_LIST_PATTERN = re.compile(r'^(?:[ \t]{0,3}(?:\* |\+ |-|\d+\.\s))')
+_PREV_LINE_PATTERN = re.compile(r'^(?:[ \t]{0,3}(?:\* |\+ |-|\d+\.\s)|> |#{1,6} |---|\*\*\*|___)')
+_DEF_LIST_TERM_PATTERN = re.compile(r'^[^\s].*$')
+_DEF_LIST_DEFINITION_PATTERN = re.compile(r'^\s*:\s+')
+_FOOTNOTE_DEF_PATTERN = re.compile(r'^\[\^[^\]]+\]:')
 _STRIKETHROUGH_PATTERN = re.compile(r'~~(.*?)~~', re.S)
 _CHECKBOX_PATTERN = re.compile(r'^(\s*(?:[-+*]|\d+\.))\s*\[([ xX])\]\s+', re.M)
 
-def normalize_markdown(markdown_text):
-    """Normalize markdown text for better HTML conversion.
-    
-    - Adds blank lines before lists following paragraphs
-    - Adds blank lines before definition lists and footnote definitions
-    - Converts strikethrough (~~text~~) to HTML <del> tags
-    - Converts markdown checkboxes to HTML input elements
-    """
-    lines = markdown_text.splitlines()
-    normalized_lines = []
-    
-    # Add empty line before lists, definition list terms, and footnote definitions if needed
-    for index, line in enumerate(lines):
-        previous = lines[index - 1] if index > 0 else ''
-        next_line = lines[index + 1] if index < len(lines) - 1 else ''
+MARKDOWN_EXTENSIONS = [
+    'fenced_code',
+    'tables',
+    'codehilite',
+    'sane_lists',
+    'extra',
+    'meta',
+    'toc',
+    'attr_list',
+    'admonition',
+    'footnotes',
+    'def_list',
+]
 
-        should_add_blank_line = False
-        if _LIST_PATTERN.match(line):
-            should_add_blank_line = previous.strip() and not _PREV_LINE_PATTERN.match(previous)
-        elif _FOOTNOTE_DEF_PATTERN.match(line):
-            should_add_blank_line = previous.strip() and not previous.isspace()
-        elif _DEF_LIST_TERM_PATTERN.match(line) and _DEF_LIST_DEFINITION_PATTERN.match(next_line):
-            should_add_blank_line = previous.strip() and not _PREV_LINE_PATTERN.match(previous)
+EXTENSION_CONFIGS = {
+    'codehilite': {
+        'guess_lang': False,
+        'noclasses': True,
+        'pygments_style': 'monokai',
+    }
+}
 
-        if should_add_blank_line:
-            normalized_lines.append('')
-
-        normalized_lines.append(line)
-
-    normalized_text = '\n'.join(normalized_lines)
-    
-    # Apply transformations
-    normalized_text = _STRIKETHROUGH_PATTERN.sub(r'<del>\1</del>', normalized_text)
-    normalized_text = _CHECKBOX_PATTERN.sub(
-        lambda m: f"{m.group(1)} <input type=\"checkbox\" disabled{' checked' if m.group(2).lower() == 'x' else ''}> ",
-        normalized_text
-    )
-    return normalized_text
-
-def convert_md_to_html(input_file, output_file):
-    """Convert a Markdown file to a styled HTML file.
-    
-    Args:
-        input_file: Path to the input Markdown file
-        output_file: Path to the output HTML file
-    """
-    try:
-        # Read the markdown file
-        with open(input_file, 'r', encoding='utf-8') as f:
-            markdown_text = f.read()
-        
-        html_content = convert_markdown_text_to_html(markdown_text)
-
-        # Write the HTML to output file
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(html_content)
-            
-        print(f"Success! '{input_file}' has been converted to '{output_file}'.")
-
-    except FileNotFoundError:
-        print(f"Error: The file '{input_file}' could not be found.")
-
-
-def convert_markdown_text_to_html(markdown_text):
-    """Convert markdown text to a full HTML document string."""
-    markdown_text = normalize_markdown(markdown_text)
-    html_content = markdown.markdown(
-        markdown_text,
-        extensions=[
-            "fenced_code",
-            "tables",
-            "codehilite",
-            "sane_lists",
-            "extra",
-            "meta",
-            "toc",
-            "attr_list",
-            "admonition",
-            "footnotes",
-            "def_list",
-        ],
-        extension_configs={
-            'codehilite': {
-                'guess_lang': False,
-                'noclasses': True,
-                'pygments_style': 'monokai'
-            }
-        },
-        output_format="html5"
-    )
-    # Post-process generated HTML to normalize footnote markup
-    # - prefer `href` before `class` on footnote links
-    # - remove verbose `title` attributes on backrefs
-    # - normalize `<hr>` to `<hr />` for consistency with some tooling
-    html_content = re.sub(r'<a\s+class="footnote-ref"\s+href="(#fn:[^\"]+)">', r'<a href="\1" class="footnote-ref">', html_content)
-    html_content = re.sub(r'<a\s+class="footnote-backref"\s+href="(#fnref:[^\"]+)"(?:\s+title="[^"]*")?>', r'<a href="\1" class="footnote-backref">', html_content)
-    html_content = re.sub(r'<hr>', '<hr />', html_content)
-
-    return f"""<!DOCTYPE html>
+HTML_TEMPLATE = '''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Converted Document</title>
+    <title>{title}</title>
     <style>
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -183,7 +108,6 @@ def convert_markdown_text_to_html(markdown_text):
             border-radius: 0.3rem;
             font-family: Consolas, 'Courier New', monospace;
             font-size: 0.95rem;
-            
         }}
         del {{
             text-decoration: line-through;
@@ -231,24 +155,92 @@ def convert_markdown_text_to_html(markdown_text):
 <body>
 {html_content}
 </body>
-</html>"""
+</html>'''
+
+
+def normalize_markdown(markdown_text: str) -> str:
+    """Normalize markdown text for better HTML conversion."""
+    lines = markdown_text.splitlines()
+    normalized_lines = []
+
+    for index, line in enumerate(lines):
+        previous = lines[index - 1] if index > 0 else ''
+        next_line = lines[index + 1] if index < len(lines) - 1 else ''
+
+        if _LIST_PATTERN.match(line) and previous.strip() and not _PREV_LINE_PATTERN.match(previous):
+            normalized_lines.append('')
+        elif _FOOTNOTE_DEF_PATTERN.match(line) and previous.strip():
+            normalized_lines.append('')
+        elif _DEF_LIST_TERM_PATTERN.match(line) and _DEF_LIST_DEFINITION_PATTERN.match(next_line) and previous.strip() and not _PREV_LINE_PATTERN.match(previous):
+            normalized_lines.append('')
+
+        normalized_lines.append(line)
+
+    normalized_text = '\n'.join(normalized_lines)
+    normalized_text = _STRIKETHROUGH_PATTERN.sub(r'<del>\1</del>', normalized_text)
+    normalized_text = _CHECKBOX_PATTERN.sub(
+        lambda m: f"{m.group(1)} <input type=\"checkbox\" disabled{' checked' if m.group(2).lower() == 'x' else ''}> ",
+        normalized_text,
+    )
+    return normalized_text
+
+
+def convert_markdown_text_to_html(markdown_text: str, title: str = 'Converted Document') -> str:
+    """Convert markdown text into a full HTML document."""
+    markdown_text = normalize_markdown(markdown_text)
+    html_body = markdown.markdown(
+        markdown_text,
+        extensions=MARKDOWN_EXTENSIONS,
+        extension_configs=EXTENSION_CONFIGS,
+        output_format='html5',
+    )
+
+    html_body = re.sub(
+        r'<a\s+class="footnote-ref"\s+href="(#fn:[^\"]+)">',
+        r'<a href="\1" class="footnote-ref">',
+        html_body,
+    )
+    html_body = re.sub(
+        r'<a\s+class="footnote-backref"\s+href="(#fnref:[^\"]+)"(?:\s+title="[^"]*")?>',
+        r'<a href="\1" class="footnote-backref">',
+        html_body,
+    )
+    html_body = html_body.replace('<hr>', '<hr />')
+    return HTML_TEMPLATE.format(title=title, html_content=html_body)
+
+
+def convert_md_to_html(input_file, output_file):
+    """Convert a Markdown file to a styled HTML file.
+
+    Args:
+        input_file: Path to the input Markdown file
+        output_file: Path to the output HTML file
+    """
+    input_path = Path(input_file)
+    output_path = Path(output_file)
+
+    if not input_path.exists():
+        print(f"Error: The file '{input_path}' could not be found.")
+        return
+
+    markdown_text = input_path.read_text(encoding='utf-8')
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(convert_markdown_text_to_html(markdown_text), encoding='utf-8')
+    print(f"Success! '{input_path}' has been converted to '{output_path}'.")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert a Markdown file to HTML.")
     parser.add_argument("input", help="Input Markdown file path")
     parser.add_argument("-o", "--output", help="Output HTML file path (optional). If omitted, uses the same basename with .html in the current directory")
     args = parser.parse_args()
 
-    if not os.path.exists(args.input):
-        print(f"Error: The file '{args.input}' could not be found.")
+    input_path = Path(args.input)
+    if not input_path.exists():
+        print(f"Error: The file '{input_path}' could not be found.")
         sys.exit(1)
 
-    input_file = args.input
-    if args.output:
-        output_file = args.output
-        output_dir = os.path.dirname(output_file)
-        if output_dir and not os.path.exists(output_dir):
-            os.makedirs(output_dir, exist_ok=True)
-    else:
-        output_file = os.path.splitext(os.path.basename(args.input))[0] + ".html"
+    output_path = Path(args.output) if args.output else input_path.with_suffix('.html')
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    convert_md_to_html(input_file, output_file)
+    convert_md_to_html(input_path, output_path)

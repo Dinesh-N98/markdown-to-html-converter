@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converted Document</title>
+    <script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\(', '\)']],
+    displayMath: [['$$', '$$'], ['\[', '\]']],
+    processEscapes: true,
+    tags: 'ams'
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+            background: #f6f7fb;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #1a202c;
+            margin-top: 1.6rem;
+            margin-bottom: 0.75rem;
+        }
+        h1 { font-size: 2.4rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.6rem; }
+        p {
+            margin: 0 0 1rem 0;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #d2d6dc;
+            margin: 2rem 0;
+        }
+        a {
+            color: #1d4ed8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        blockquote {
+            border-left: 4px solid #6b7280;
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+            background: #ffffff;
+            color: #4b5563;
+        }
+        ul, ol {
+            margin: 0 0 1rem 1.5rem;
+            padding: 0;
+        }
+        ul ul, ol ol, ul ol, ol ul {
+            margin-top: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #ffffff;
+        }
+        table th,
+        table td {
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 0.9rem;
+        }
+        table th {
+            background: #e5e7eb;
+        }
+        code {
+            background-color: rgba(110, 118, 129, 0.4);
+            padding: 0.15rem 0.3rem;
+            border-radius: 0.3rem;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 0.95rem;
+            
+        }
+        del {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+        ul li {
+            margin-bottom: 0.35rem;
+        }
+        pre {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #0d1117;
+            color: #d6deeb;
+            overflow-x: auto;
+            border-radius: 0.65rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+        }
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+        .codehilite {
+            background: #0d1117;
+            color: #d6deeb;
+        }
+        .codehilite .hll { background-color: #21262d }
+        .codehilite .c, .codehilite .cm, .codehilite .c1, .codehilite .cs { color: #6a737d; font-style: italic }
+        .codehilite .err { color: #f97583; background-color: #fff0f1 }
+        .codehilite .k, .codehilite .kc, .codehilite .kd, .codehilite .kn, .codehilite .kp, .codehilite .kr, .codehilite .gd, .codehilite .ne, .codehilite .se, .codehilite .si { color: #ff7b72 }
+        .codehilite .o, .codehilite .nb, .codehilite .nl, .codehilite .nf, .codehilite .nt, .codehilite .nv, .codehilite .ow, .codehilite .bp, .codehilite .vc, .codehilite .vg, .codehilite .vi, .codehilite .sr { color: #79c0ff }
+        .codehilite .ch, .codehilite .cp, .codehilite .go, .codehilite .gp, .codehilite .gu, .codehilite .ni { color: #8b949e }
+        .codehilite .ge { font-style: italic }
+        .codehilite .gi { color: #56d364 }
+        .codehilite .gs { font-weight: bold }
+        .codehilite .kt, .codehilite .m, .codehilite .no, .codehilite .mf, .codehilite .mh, .codehilite .mi, .codehilite .mo, .codehilite .il { color: #f2cc8f }
+        .codehilite .s, .codehilite .sb, .codehilite .sc, .codehilite .sd, .codehilite .s2, .codehilite .sh, .codehilite .sx, .codehilite .s1, .codehilite .ss { color: #a5d6ff }
+        .codehilite .nc, .codehilite .nd, .codehilite .nn { color: #7ee787 }
+        .codehilite .na { color: #ffab70 }
+        .codehilite .w { color: #c9d1d9 }
+    </style>
+</head>
+<body>
+<h1 id="latex-mathematics-cheat-sheet">LaTeX Mathematics Cheat Sheet</h1>
+<p>This guide covers the most common LaTeX syntax used for rendering mathematical formulas in Markdown documents using engines like </p>
+<p>When <span class="math inline">$a \ne 0$</span>, there are two solutions to <div class="math display">$$
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$</div></p>
+<p><a href="https://www.mathjax.org/">MathJax</a> or <a href="https://katex.org/">KaTeX</a></p>
+<p>.</p>
+<hr />
+<h2 id="1-core-syntax-delimiters">1. Core Syntax &amp; Delimiters</h2>
+<ul>
+<li>
+<p><strong>Inline Math:</strong> Wrap formulas in single dollar signs <code><span class="math inline">$ ... $</span></code> to include them within a sentence.</p>
+<ul>
+<li><em>Example:</em> The equation <code><span class="math inline">$E=mc^2$</span></code> renders as E=mc².</li>
+</ul>
+</li>
+<li>
+<p><strong>Display Math:</strong> Wrap formulas in double dollar signs <code><div class="math display">$$
+ ... 
+$$</div></code> to place them on their own centered line.</p>
+<ul>
+<li><em>Example:</em> <code><div class="math display">$$
+E=mc^2
+$$</div></code> renders on its own distinct line.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="2-arithmetic-basic-algebra">2. Arithmetic &amp; Basic Algebra</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Concept</th>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Example</th>
+<th style="text-align: left;">Rendered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Exponents (Superscript)</td>
+<td style="text-align: left;"><code>x^{2}</code></td>
+<td style="text-align: left;"><code><span class="math inline">$x^{2}$</span></code></td>
+<td style="text-align: left;">x²</td>
+</tr>
+<tr>
+<td style="text-align: left;">Subscripts</td>
+<td style="text-align: left;"><code>x_{i}</code></td>
+<td style="text-align: left;"><code><span class="math inline">$x_{i}$</span></code></td>
+<td style="text-align: left;">(x_{i})</td>
+</tr>
+<tr>
+<td style="text-align: left;">Multi-character scripts</td>
+<td style="text-align: left;"><code>e^{i\pi}</code></td>
+<td style="text-align: left;"><code><span class="math inline">$e^{i\pi}$</span></code></td>
+<td style="text-align: left;">(e^{i\pi})</td>
+</tr>
+<tr>
+<td style="text-align: left;">Fractions</td>
+<td style="text-align: left;"><code>\frac{a}{b}</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\frac{1}{2}$</span></code></td>
+<td style="text-align: left;">(\frac{1}{2})</td>
+</tr>
+<tr>
+<td style="text-align: left;">Square Roots</td>
+<td style="text-align: left;"><code>\sqrt{x}</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\sqrt{x}$</span></code></td>
+<td style="text-align: left;">(\sqrt{x})</td>
+</tr>
+<tr>
+<td style="text-align: left;">Higher-order Roots</td>
+<td style="text-align: left;"><code>\sqrt[n]{x}</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\sqrt[3]{8}$</span></code></td>
+<td style="text-align: left;">(\sqrt[3]{8})</td>
+</tr>
+<tr>
+<td style="text-align: left;">Multiplication (Dot)</td>
+<td style="text-align: left;"><code>\cdot</code></td>
+<td style="text-align: left;"><code><span class="math inline">$a \cdot b$</span></code></td>
+<td style="text-align: left;">a ⋅ b</td>
+</tr>
+<tr>
+<td style="text-align: left;">Multiplication (Cross)</td>
+<td style="text-align: left;"><code>\times</code></td>
+<td style="text-align: left;"><code><span class="math inline">$2 \times 3$</span></code></td>
+<td style="text-align: left;">2 × 3</td>
+</tr>
+<tr>
+<td style="text-align: left;">Division Symbol</td>
+<td style="text-align: left;"><code>\div</code></td>
+<td style="text-align: left;"><code><span class="math inline">$6 \div 2$</span></code></td>
+<td style="text-align: left;">6 ÷ 2</td>
+</tr>
+<tr>
+<td style="text-align: left;">Plus-Minus</td>
+<td style="text-align: left;"><code>\pm</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\pm x$</span></code></td>
+<td style="text-align: left;">± x</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-relations-logic">3. Relations &amp; Logic</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Concept</th>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Example</th>
+<th style="text-align: left;">Rendered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Greater / Less Than</td>
+<td style="text-align: left;"><code>&lt;</code> , <code>&gt;</code></td>
+<td style="text-align: left;"><code><span class="math inline">$a < b > c$</span></code></td>
+<td style="text-align: left;">a &lt; b &gt; c</td>
+</tr>
+<tr>
+<td style="text-align: left;">Less / Equal to</td>
+<td style="text-align: left;"><code>\le</code> or <code>\leq</code></td>
+<td style="text-align: left;"><code><span class="math inline">$a \le b$</span></code></td>
+<td style="text-align: left;">a ≤ b</td>
+</tr>
+<tr>
+<td style="text-align: left;">Greater / Equal to</td>
+<td style="text-align: left;"><code>\ge</code> or <code>\geq</code></td>
+<td style="text-align: left;"><code><span class="math inline">$a \ge b$</span></code></td>
+<td style="text-align: left;">a ≥ b</td>
+</tr>
+<tr>
+<td style="text-align: left;">Not Equal To</td>
+<td style="text-align: left;"><code>\ne</code> or <code>\neq</code></td>
+<td style="text-align: left;"><code><span class="math inline">$a \ne b$</span></code></td>
+<td style="text-align: left;">a ≠ b</td>
+</tr>
+<tr>
+<td style="text-align: left;">Approximately Equal</td>
+<td style="text-align: left;"><code>\approx</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\pi \approx 3.14$</span></code></td>
+<td style="text-align: left;">π ≈ 3.14</td>
+</tr>
+<tr>
+<td style="text-align: left;">Proportional To</td>
+<td style="text-align: left;"><code>\propto</code></td>
+<td style="text-align: left;"><code><span class="math inline">$y \propto x$</span></code></td>
+<td style="text-align: left;">(y \propto x)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Equivalence (Infinity)</td>
+<td style="text-align: left;"><code>\infty</code></td>
+<td style="text-align: left;"><code><span class="math inline">$x \to \infty$</span></code></td>
+<td style="text-align: left;">x → ∞</td>
+</tr>
+<tr>
+<td style="text-align: left;">Therefore / Because</td>
+<td style="text-align: left;"><code>\therefore</code> , <code>\because</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\therefore x = 1$</span></code></td>
+<td style="text-align: left;">(\therefore x = 1)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-greek-letters">4. Greek Letters</h2>
+<h3 id="lowercase">Lowercase</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Letter</th>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Rendered</th>
+<th style="text-align: left;">Letter</th>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Rendered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Alpha</td>
+<td style="text-align: left;"><code>\alpha</code></td>
+<td style="text-align: left;">α</td>
+<td style="text-align: left;">Beta</td>
+<td style="text-align: left;"><code>\beta</code></td>
+<td style="text-align: left;">β</td>
+</tr>
+<tr>
+<td style="text-align: left;">Gamma</td>
+<td style="text-align: left;"><code>\gamma</code></td>
+<td style="text-align: left;">γ</td>
+<td style="text-align: left;">Delta</td>
+<td style="text-align: left;"><code>\delta</code></td>
+<td style="text-align: left;">δ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Epsilon</td>
+<td style="text-align: left;"><code>\epsilon</code></td>
+<td style="text-align: left;">ε</td>
+<td style="text-align: left;">Theta</td>
+<td style="text-align: left;"><code>\theta</code></td>
+<td style="text-align: left;">θ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Lambda</td>
+<td style="text-align: left;"><code>\lambda</code></td>
+<td style="text-align: left;">λ</td>
+<td style="text-align: left;">Mu</td>
+<td style="text-align: left;"><code>\mu</code></td>
+<td style="text-align: left;">μ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pi</td>
+<td style="text-align: left;"><code>\pi</code></td>
+<td style="text-align: left;">π</td>
+<td style="text-align: left;">Rho</td>
+<td style="text-align: left;"><code>\rho</code></td>
+<td style="text-align: left;">ρ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Sigma</td>
+<td style="text-align: left;"><code>\sigma</code></td>
+<td style="text-align: left;">σ</td>
+<td style="text-align: left;">Tau</td>
+<td style="text-align: left;"><code>\tau</code></td>
+<td style="text-align: left;">τ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Phi</td>
+<td style="text-align: left;"><code>\phi</code></td>
+<td style="text-align: left;">φ</td>
+<td style="text-align: left;">Omega</td>
+<td style="text-align: left;"><code>\omega</code></td>
+<td style="text-align: left;">ω</td>
+</tr>
+</tbody>
+</table>
+<h3 id="uppercase">Uppercase</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Letter</th>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Rendered</th>
+<th style="text-align: left;">Letter</th>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Rendered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Gamma</td>
+<td style="text-align: left;"><code>\Gamma</code></td>
+<td style="text-align: left;">Γ</td>
+<td style="text-align: left;">Delta</td>
+<td style="text-align: left;"><code>\Delta</code></td>
+<td style="text-align: left;">Δ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Theta</td>
+<td style="text-align: left;"><code>\Theta</code></td>
+<td style="text-align: left;">Θ</td>
+<td style="text-align: left;">Lambda</td>
+<td style="text-align: left;"><code>\Lambda</code></td>
+<td style="text-align: left;">Λ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pi</td>
+<td style="text-align: left;"><code>\Pi</code></td>
+<td style="text-align: left;">Π</td>
+<td style="text-align: left;">Sigma</td>
+<td style="text-align: left;"><code>\Sigma</code></td>
+<td style="text-align: left;">Σ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Phi</td>
+<td style="text-align: left;"><code>\Phi</code></td>
+<td style="text-align: left;">Φ</td>
+<td style="text-align: left;">Omega</td>
+<td style="text-align: left;"><code>\Omega</code></td>
+<td style="text-align: left;">Ω</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-calculus-advanced-math">5. Calculus &amp; Advanced Math</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Concept</th>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Example</th>
+<th style="text-align: left;">Rendered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Limits</td>
+<td style="text-align: left;"><code>\lim_{x \to a}</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\lim_{x \to 0} x$</span></code></td>
+<td style="text-align: left;">(\lim_{x \to 0} x)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Integrals</td>
+<td style="text-align: left;"><code>\int</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\int f(x)dx$</span></code></td>
+<td style="text-align: left;">(\int f(x)dx)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Definite Integrals</td>
+<td style="text-align: left;"><code>\int_{a}^{b}</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\int_{0}^{1} x dx$</span></code></td>
+<td style="text-align: left;">(\int_{0}^{1} x dx)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Double Integrals</td>
+<td style="text-align: left;"><code>\iint</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\iint_D dxdy$</span></code></td>
+<td style="text-align: left;">(\iint_D dxdy)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Summation</td>
+<td style="text-align: left;"><code>\sum_{i=1}^{n}</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\sum_{i=1}^{n} i$</span></code></td>
+<td style="text-align: left;">(\sum_{i=1}^{n} i)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Products</td>
+<td style="text-align: left;"><code>\prod</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\prod_{i=1}^{n} x_i$</span></code></td>
+<td style="text-align: left;">(\prod_{i=1}^{n} x_i)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Partial Derivative</td>
+<td style="text-align: left;"><code>\partial</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\frac{\partial f}{\partial x}$</span></code></td>
+<td style="text-align: left;">(\frac{\partial f}{\partial x})</td>
+</tr>
+<tr>
+<td style="text-align: left;">Gradient / Del</td>
+<td style="text-align: left;"><code>\nabla</code></td>
+<td style="text-align: left;"><code><span class="math inline">$\nabla f$</span></code></td>
+<td style="text-align: left;">∇ f</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-vectors-matrices">6. Vectors &amp; Matrices</h2>
+<h3 id="vector-accents">Vector Accents</h3>
+<ul>
+<li>Single character vector: <code><span class="math inline">$\vec{v}$</span></code> (\to \vec{v})</li>
+<li>Multi-character vector: <code><span class="math inline">$\overrightarrow{AB}$</span></code> (\to \overrightarrow{AB})</li>
+<li>Bold matrix/vector notation: <code><span class="math inline">$\mathbf{X}$</span></code> (\to \mathbf{X})</li>
+</ul>
+<h3 id="matrices">Matrices</h3>
+<p>Matrices use an environment structure starting with <code>\begin{matrix}</code> and ending with <code>\end{matrix}</code>. Use <code>&amp;</code> to separate columns and <code>\\</code> to separate rows.</p>
+<p><strong>Standard Matrix (No Brackets):</strong></p>
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code><div class="math display">$$
+\begin{matrix} a & b \\ c & d \end{matrix}
+$$</div>
+</code></pre></div>
+
+<p>[\begin{matrix} a &amp; b \ c &amp; d \end{matrix}]</p>
+<p><strong>Bracketed Matrix (b丰富):</strong></p>
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code><div class="math display">$$
+\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}
+$$</div>
+</code></pre></div>
+
+<p>[\begin{bmatrix} 1 &amp; 0 \ 0 &amp; 1 \end{bmatrix}]</p>
+<p><strong>Parenthesized Matrix (p丰富):</strong></p>
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>\[\begin{pmatrix} x &amp; y \\ z &amp; w \end{pmatrix}\]
+</code></pre></div>
+
+<div class="math display">$$
+\begin{pmatrix} x & y \\ z & w \end{pmatrix}
+$$</div>
+<hr />
+<h2 id="7-brackets-parentheses-auto-sizing">7. Brackets &amp; Parentheses (Auto-Sizing)</h2>
+<p>Standard text brackets like <code>(x)</code> do not scale automatically if the math inside them is tall (like a fraction). Use <code>\left</code> and <code>\right</code> modifiers to automatically size your brackets to match the content inside.</p>
+<ul>
+<li><strong>Wrong (Fixed Size):</strong> <code><span class="math inline">$(\frac{1}{2})$</span></code> <span class="math inline">$\to (\frac{1}{2})$</span></li>
+<li><strong>Right (Dynamic Size):</strong> <code><span class="math inline">$\left( \frac{1}{2} \right)$</span></code> <span class="math inline">$\to \left( \frac{1}{2} \right)$</span></li>
+</ul>
+<h3 id="bracket-types">Bracket Types</h3>
+<ul>
+<li>Parentheses: <code>\left( ... \right)</code></li>
+<li>Square Brackets: <code>\left[ ... \right]</code></li>
+<li>Curly Braces (Must be escaped with a backslash): <code>\left\{ ... \right\}</code> <span class="math inline">$\to \left\{ x \right\}$</span></li>
+</ul>
+</body>
+</html>
