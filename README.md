@@ -43,7 +43,7 @@ cd markdown-to-html-converter
 
 Or download the ZIP from GitHub, extract it, then `cd` into the extracted folder.
 
-Optional: create and activate a virtual environment:
+Optional but recommended: create and activate a virtual environment before installing dependencies.
 
 ```bash
 python -m venv .venv

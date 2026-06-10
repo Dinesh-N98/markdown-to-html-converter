@@ -1,15 +1,17 @@
 from flask import Flask, request, jsonify, make_response
+from pathlib import Path
 import os
 import sys
+import tempfile
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='/static')
 
 # Paths
-base_dir = os.path.dirname(os.path.abspath(__file__))  # .../server
-project_root = os.path.dirname(base_dir)  # workspace root
-sys.path.insert(0, project_root)
+base_dir = Path(__file__).resolve().parent  # .../server
+project_root = base_dir.parent  # workspace root
+sys.path.insert(0, str(project_root))
 
-import converter
+from converter import convert_md_to_html
 
 
 @app.route('/')
@@ -39,11 +41,31 @@ def convert_markdown():
         if not file.filename.lower().endswith('.md'):
             return jsonify({'error': 'File must be a .md file'}), 400
 
-        markdown_bytes = file.read()
-        markdown_text = markdown_bytes.decode('utf-8', errors='replace')
         output_filename = os.path.splitext(file.filename)[0] + '.html'
 
-        html_content = converter.convert_markdown_text_to_html(markdown_text)
+        # Save uploaded markdown to a temporary file, convert, then return HTML
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.md') as tmp_in:
+            tmp_in.write(file.read())
+            tmp_in_path = tmp_in.name
+
+        tmp_out = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
+        tmp_out_path = tmp_out.name
+        tmp_out.close()
+
+        try:
+            convert_md_to_html(tmp_in_path, tmp_out_path)
+            with open(tmp_out_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+        finally:
+            try:
+                os.remove(tmp_in_path)
+            except Exception:
+                pass
+            try:
+                os.remove(tmp_out_path)
+            except Exception:
+                pass
+
         response = make_response(html_content)
         response.headers['Content-Type'] = 'text/html; charset=utf-8'
         response.headers['Content-Disposition'] = f'attachment; filename="{output_filename}"'
