@@ -7,16 +7,16 @@ A compact utility and small web app that converts Markdown files into HTML.
 - Converts headings, paragraphs, blockquotes, ordered and unordered lists
 - Converts tables and task lists
 - Converts fenced code blocks, inline code, and syntax highlighting via `codehilite`
+- Supports YAML metadata, automatic TOC markers, attribute lists, and admonition blocks
 - Strikethrough (`~~text~~`) and checkbox normalization
 - Opinionated, responsive HTML template included
 
 ### What it may miss
 
-- Footnotes, definition lists, and some extended Markdown flavors
+- Footnotes, definition lists, and some other less common Markdown flavors
 - Math blocks / inline LaTeX rendering
-- YAML front matter handling
 - GitHub-specific markdown edge cases and raw HTML passthrough
-- Advanced extensions (admonitions, automatic TOC, emoji shortcuts)
+- Emoji shortcuts and advanced styling behaviors
 
 ### Requirements
 

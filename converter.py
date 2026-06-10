@@ -7,6 +7,9 @@ import markdown
 # Pre-compile regex patterns for better performance
 _LIST_PATTERN = re.compile(r'^(?:[ \t]{0,3}(?:\* |\+ |-|\d+\.\s))', re.MULTILINE)
 _PREV_LINE_PATTERN = re.compile(r'^(?:[ \t]{0,3}(?:\* |\+ |-|\d+\.\s)|> |#{1,6} |---|\*\*\*|___)', re.MULTILINE)
+_DEF_LIST_TERM_PATTERN = re.compile(r'^[^\s].*$', re.MULTILINE)
+_DEF_LIST_DEFINITION_PATTERN = re.compile(r'^\s*:\s+', re.MULTILINE)
+_FOOTNOTE_DEF_PATTERN = re.compile(r'^\[\^[^\]]+\]:', re.MULTILINE)
 _STRIKETHROUGH_PATTERN = re.compile(r'~~(.*?)~~', re.S)
 _CHECKBOX_PATTERN = re.compile(r'^(\s*(?:[-+*]|\d+\.))\s*\[([ xX])\]\s+', re.M)
 
@@ -14,18 +17,29 @@ def normalize_markdown(markdown_text):
     """Normalize markdown text for better HTML conversion.
     
     - Adds blank lines before lists following paragraphs
+    - Adds blank lines before definition lists and footnote definitions
     - Converts strikethrough (~~text~~) to HTML <del> tags
     - Converts markdown checkboxes to HTML input elements
     """
     lines = markdown_text.splitlines()
     normalized_lines = []
     
-    # Add empty line before lists if needed
+    # Add empty line before lists, definition list terms, and footnote definitions if needed
     for index, line in enumerate(lines):
+        previous = lines[index - 1] if index > 0 else ''
+        next_line = lines[index + 1] if index < len(lines) - 1 else ''
+
+        should_add_blank_line = False
         if _LIST_PATTERN.match(line):
-            previous = lines[index - 1] if index > 0 else ''
-            if previous.strip() and not _PREV_LINE_PATTERN.match(previous):
-                normalized_lines.append('')
+            should_add_blank_line = previous.strip() and not _PREV_LINE_PATTERN.match(previous)
+        elif _FOOTNOTE_DEF_PATTERN.match(line):
+            should_add_blank_line = previous.strip() and not previous.isspace()
+        elif _DEF_LIST_TERM_PATTERN.match(line) and _DEF_LIST_DEFINITION_PATTERN.match(next_line):
+            should_add_blank_line = previous.strip() and not _PREV_LINE_PATTERN.match(previous)
+
+        if should_add_blank_line:
+            normalized_lines.append('')
+
         normalized_lines.append(line)
 
     normalized_text = '\n'.join(normalized_lines)
@@ -67,7 +81,19 @@ def convert_markdown_text_to_html(markdown_text):
     markdown_text = normalize_markdown(markdown_text)
     html_content = markdown.markdown(
         markdown_text,
-        extensions=["fenced_code", "tables", "codehilite", "sane_lists"],
+        extensions=[
+            "fenced_code",
+            "tables",
+            "codehilite",
+            "sane_lists",
+            "extra",
+            "meta",
+            "toc",
+            "attr_list",
+            "admonition",
+            "footnotes",
+            "def_list",
+        ],
         extension_configs={
             'codehilite': {
                 'guess_lang': False,
@@ -77,7 +103,14 @@ def convert_markdown_text_to_html(markdown_text):
         },
         output_format="html5"
     )
-    
+    # Post-process generated HTML to normalize footnote markup
+    # - prefer `href` before `class` on footnote links
+    # - remove verbose `title` attributes on backrefs
+    # - normalize `<hr>` to `<hr />` for consistency with some tooling
+    html_content = re.sub(r'<a\s+class="footnote-ref"\s+href="(#fn:[^\"]+)">', r'<a href="\1" class="footnote-ref">', html_content)
+    html_content = re.sub(r'<a\s+class="footnote-backref"\s+href="(#fnref:[^\"]+)"(?:\s+title="[^"]*")?>', r'<a href="\1" class="footnote-backref">', html_content)
+    html_content = re.sub(r'<hr>', '<hr />', html_content)
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
