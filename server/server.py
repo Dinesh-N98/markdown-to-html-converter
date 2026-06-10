@@ -19,6 +19,14 @@ def index():
         return f.read()
 
 
+@app.route('/preview')
+@app.route('/preview.html')
+def preview():
+    frontend_preview = os.path.join(project_root, 'frontend', 'preview.html')
+    with open(frontend_preview, 'r', encoding='utf-8') as f:
+        return f.read()
+
+
 @app.route('/convert', methods=['POST'])
 def convert_markdown():
     try:

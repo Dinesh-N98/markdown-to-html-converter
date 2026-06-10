@@ -47,19 +47,34 @@ convertBtn.addEventListener('click', async function() {
 			throw new Error(errorMessage);
 		}
 
-		const blob = await response.blob();
+		const htmlText = await response.text();
 		const outputFile = file.name.replace(/\.md$/i, '.html');
+		localStorage.setItem('convertedHtml', htmlText);
+		localStorage.setItem('convertedFileName', outputFile);
+
+		const blob = new Blob([htmlText], { type: 'text/html' });
 		const downloadUrl = window.URL.createObjectURL(blob);
+
+		const previewLink = document.createElement('a');
+		previewLink.href = '/preview';
+		previewLink.target = '_blank';
+		previewLink.rel = 'noopener noreferrer';
+		previewLink.textContent = 'Preview';
+		previewLink.className = 'preview-link';
 
 		const downloadLink = document.createElement('a');
 		downloadLink.href = downloadUrl;
-		downloadLink.textContent = `Download ${outputFile}`;
+		downloadLink.textContent = 'Download';
 		downloadLink.className = 'download-link';
 		downloadLink.download = outputFile;
 		
-		showStatus(`✓ Converted ${file.name} successfully. Click the button below to download the HTML file.`, 'success');
+		showStatus(`✓ Converted ${file.name} successfully. Click the buttons below to preview or download the HTML file.`, 'success');
+		const actionRow = document.createElement('div');
+		actionRow.className = 'action-links';
+		actionRow.appendChild(previewLink);
+		actionRow.appendChild(downloadLink);
 		statusDiv.appendChild(document.createElement('br'));
-		statusDiv.appendChild(downloadLink);
+		statusDiv.appendChild(actionRow);
 		setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 10000);
 
 	} catch (error) {

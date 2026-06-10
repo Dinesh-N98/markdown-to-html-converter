@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Preview Converted HTML</title>
+	<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+	<div class="navbar">
+		<a class="nav-button" href="/">Home</a>
+		<button id="downloadBtn" disabled>Download HTML</button>
+	</div>
+
+	<div class="card">
+		<h1>Converted HTML Preview</h1>
+		<p class="preview-message" id="previewMessage">If you converted a Markdown file from the home page, your HTML preview will appear below.</p>
+		<div id="previewContent" class="preview-content">
+			<p>No converted content available yet.</p>
+		</div>
+	</div>
+
+	<footer><p>Convert and preview Markdown files as HTML</p></footer>
+
+	<script>
+	const previewMessage = document.getElementById('previewMessage');
+	const previewContent = document.getElementById('previewContent');
+	const downloadBtn = document.getElementById('downloadBtn');
+
+	function loadConvertedHtml() {
+		const html = localStorage.getItem('convertedHtml');
+		const filename = localStorage.getItem('convertedFileName') || 'converted.html';
+
+		if (!html) {
+			previewMessage.textContent = 'No converted HTML found. Please convert a Markdown file from the home page first.';
+			downloadBtn.disabled = true;
+			return null;
+		}
+
+		previewMessage.textContent = `Showing the latest converted HTML. Use the button to download ${filename}.`;
+		previewContent.innerHTML = html;
+		downloadBtn.disabled = false;
+		return { html, filename };
+	}
+
+	const stored = loadConvertedHtml();
+
+	downloadBtn.addEventListener('click', () => {
+		if (!stored) {
+			return;
+		}
+
+		const blob = new Blob([stored.html], { type: 'text/html' });
+		const url = window.URL.createObjectURL(blob);
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = stored.filename;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		window.URL.revokeObjectURL(url);
+	});
+	</script>
+</body>
+</html>
