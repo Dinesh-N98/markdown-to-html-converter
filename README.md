@@ -56,7 +56,13 @@ source .venv/bin/activate
 2. Install dependencies:
 
 ```bash
-pip install markdown flask pygments
+pip install .
+```
+
+Or, to include development tools (pytest, black):
+
+```bash
+pip install .[dev]
 ```
 
 3. Run the server:
@@ -83,6 +89,7 @@ Converted files are not stored on the server for the web app flow.
 ```
 markdown-to-html-converter/
 ├─ converter.py
+├─ pyproject.toml
 ├─ README.md
 ├─ frontend/
 │  ├─ index.html
@@ -114,7 +121,7 @@ python converter.py <input.md> -o <output.html>
 ## Troubleshooting
 
 - Port in use: change the port in `server/server.py`.
-- Missing packages: run the `pip install` command above.
+- Missing packages: run `pip install .` to install from `pyproject.toml`.
 - Output file not found after conversion: verify the input file exists and check `converter.py` output path.
 
 ## Notes

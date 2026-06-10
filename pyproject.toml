@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "markdown-to-html-converter"
+version = "1.0.0"
+description = "A compact utility and small web app that converts Markdown files into HTML"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "Dinesh-N98"}
+]
+keywords = ["markdown", "html", "converter", "flask"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "markdown>=3.3.0",
+    "flask>=2.0.0",
+    "pygments>=2.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "black>=22.0",
+]
+
+[project.scripts]
+markdown-converter = "converter:convert_md_to_html"
+
+[tool.setuptools]
+packages = [""]
+
+[tool.black]
+line-length = 100
+target-version = ['py37']
